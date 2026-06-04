@@ -4,7 +4,7 @@ import jwt
 import bcrypt
 from flask import Blueprint, request, jsonify, current_app
 
-from model import db, Utente, Istituto, Pratica, TranscriptOfRecords, LearningAgreement, Esame, Mobilita
+from model import db, Utente, Istituto, Pratica, TranscriptOfRecords, LearningAgreement, Esame
 
 utenti_bp = Blueprint("users", __name__)
 
@@ -45,7 +45,7 @@ def registrazione():
         return {"msg": "Utente creato"}, 201
     except Exception as e:
         db.session.rollback()
-        return {"errore": str(e)}, 400
+        return {"errore": str(e.orig)}, 400
 
 
 ## ── POST /login ─────────────────────────────────────────────────────────────
