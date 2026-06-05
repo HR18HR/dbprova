@@ -111,15 +111,7 @@ def aggiorna_utente():
         utente.email = data["email"]
 
     if "password" in data:
-        # decodifica base64 → password in chiaro
-        try:
-            password_decoded = base64.b64decode(data["password"]).decode()
-        except Exception:
-            return {"errore": "Password non valida (atteso base64)"}, 400
-
-        # preleva il salt dal DB e ricalcola l'hash
-        salt_bytes = utente.salt.encode()
-        utente.password_hash = bcrypt.hashpw(password_decoded.encode(), salt_bytes).decode()
+        password_hash=bcrypt.hashpw(data["password"].encode(), utente.salt).decode()
 
     try:
         db.session.commit()
