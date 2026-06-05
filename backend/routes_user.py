@@ -56,23 +56,20 @@ def login():
     auth = request.headers.get("Authorization", "")
     if not auth.startswith("Basic "):
         return {"errore": "Credenziali mancanti nell'header"}, 401
-    try:
-        email, password = auth.split(" ", 1)[1].split(":", 1)
-    except Exception:
-        return {"errore": "Header Basic non valido"}, 401
-
+     passw_64=aut.split(" ")[1]
+    email= base64.b64decode(pass_64).decode("utf-8").split(":")[0]
+    password = base64.b64decode(pass_64).decode("utf-8").split(":")[1]
     # 2. estrai l'utente dal DB tramite email
     utente = db.session.query(Utente).filter_by(email=email.strip()).first()
     if utente is None:
         return {"errore": "Credenziali non valide"}, 401
 
     # 3. codifica password + salt e confronta con l'hash salvato
-    password_check = bcrypt.hashpw(
-        (password + utente.salt).encode(),
-        utente.salt.encode()
-    )
-    if password_check.decode() != utente.password_hash:
-        return {"errore": "Credenziali non valide"}, 401
+    if not bcrypt.checkpw(
+    password.encode(),
+    utente.password_hash.encode()
+):
+    return {"errore": "Credenziali non valide"}, 401
 
     # 4. genera JWT
     payload = {
