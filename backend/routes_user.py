@@ -115,4 +115,4 @@ def aggiorna_utente():
         return {"msg": "Dati aggiornati"}, 200
     except Exception as e:
         db.session.rollback()
-        return {"errore": str(e)}, 400
+        return {"errore": str(e.orig)}, 400
