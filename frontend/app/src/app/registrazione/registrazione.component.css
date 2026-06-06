@@ -144,3 +144,10 @@ button:hover {
   font-weight: 600;
   letter-spacing: 1px;
 }
+.hint-email {
+  display: block;
+  margin-top: 5px;
+  color: #7a0019;
+  font-size: 12px;
+  font-style: italic;
+}

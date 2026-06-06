@@ -25,6 +25,7 @@ export class RegistrazioneComponent {
   errore: string = '';
   successo: string = '';
   caricamento: boolean = false;
+  mostraHintEmail: boolean = false;
 
   constructor(private userService: UserService, private router: Router) {}
 

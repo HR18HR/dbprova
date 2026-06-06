@@ -1,0 +1,141 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #7a0019 0%, #a6192e 38%, #f5f1e8 38%);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.dashboard {
+  padding: 35px;
+}
+
+.header {
+  background: white;
+  border-radius: 18px;
+  padding: 25px 35px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 8px solid #7a0019;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #7a0019;
+  margin: 0;
+}
+
+.header p {
+  margin: 6px 0 0;
+  color: #555;
+  font-weight: 600;
+}
+
+.header img {
+  width: 170px;
+}
+
+.actions-card,
+.pratiche-card {
+  background: white;
+  max-width: 950px;
+  margin: 0 auto 25px;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.actions-card {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.pratiche-card h2 {
+  color: #7a0019;
+  margin-top: 0;
+  margin-bottom: 22px;
+}
+
+.pratica {
+  background: #fafafa;
+  border-left: 6px solid #7a0019;
+  padding: 22px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.pratica-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pratica h3 {
+  margin: 0 0 15px;
+  color: #7a0019;
+}
+
+.pratica p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.badge {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.warning {
+  background: #fff2cc;
+  color: #8a5a00;
+}
+
+.success {
+  background: #e8f7ec;
+  color: #1e6d3d;
+}
+
+.pratica-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #7a0019;
+  color: white;
+}
+
+.btn-secondary {
+  background: white;
+  color: #7a0019;
+  border: 2px solid #7a0019;
+}
+
+.btn-edit {
+  background: #d8b365;
+  color: white;
+}
+
+.btn-delete {
+  background: #9b001f;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.88;
+}

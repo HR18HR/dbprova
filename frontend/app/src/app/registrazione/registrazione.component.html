@@ -31,14 +31,21 @@
     </div>
 
     <div class="form-group">
-      <label>Email *</label>
-      <input
-        type="email"
-        [(ngModel)]="email"
-        name="email"
-        placeholder="Inserisci la tua email"
-      />
-    </div>
+  <label>Email *</label>
+
+  <input
+    type="email"
+    [(ngModel)]="email"
+    name="email"
+    placeholder="Inserisci la tua email"
+    (focus)="mostraHintEmail = true"
+    (blur)="mostraHintEmail = false"
+  />
+
+ <small class="hint-email" *ngIf="mostraHintEmail">
+  Inserire una email istituzionale nel formato nome.cognome&#64;unive.it
+</small>
+</div>
 
     <div class="form-group">
       <label>Data di nascita *</label>

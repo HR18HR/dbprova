@@ -21,6 +21,8 @@ CORS(app, origins=["http://localhost:4200"])
 db.init_app(app)
  # prova
 with app.app_context():
+    db.drop_all()
+    db.create_all()
     print("0k")
 
 

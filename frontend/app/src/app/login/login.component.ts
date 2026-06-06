@@ -3,7 +3,8 @@ import { Data, Router, RouterLink, RouterOutlet} from '@angular/router';
 import {FormsModule} from '@angular/forms'
 import { UserService,Token} from '../user.service';
 import { NgIf } from '@angular/common';
-import { jwtDecode } from 'jwt-decode';
+import { InvalidTokenError, jwtDecode } from 'jwt-decode';
+
 
 //Interface Token--> email,username,role
 @Component({
@@ -19,7 +20,7 @@ export class LoginComponent {
   password: string = '';  // Campo per la password dell’utente
   Errore: { message: string, tentativi: number } = { message: '', tentativi: 0 }; // Oggetto per gestire i messaggi di errore e tentativi falliti
   benvenuto: string = ''; // Messaggio di benvenuto visualizzato all’utente dopo il login
-
+  ruolo:Token={id:0,email:" ",ruolo:" "}
 
 
 
@@ -36,12 +37,14 @@ export class LoginComponent {
         // Parsing brutale della risposta per ottenere il messaggio e il token (da sistemare meglio!)
         this.benvenuto = data.message = 'Benvenuto';
         localStorage.setItem("jwt", data.token); // Attenzione: "token" sembra un errore di battitura per "token"
-
+         this.ruolo=<Token>jwtDecode(data.token);
         // Se il token è stato salvato correttamente
         if (localStorage.getItem("jwt") != null) {
           setTimeout(()=>{
-              this.Rotta.navigate(["/home"])
-          },2000)
+            if(this.ruolo.ruolo!="S")
+              this.Rotta.navigate(["/homed"])
+            else this.Rotta.navigate(["homes"])
+          },1000)
           
     
          
