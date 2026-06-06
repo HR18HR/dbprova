@@ -8,7 +8,6 @@ from model import db, Utente, Istituto, Pratica, TranscriptOfRecords, LearningAg
 
 utenti_bp = Blueprint("users", __name__)
 
-
 # decodifica il JWT e restituisce l'id utente ────────────────────
 def _get_id_from_token():
     """Restituisce l'id utente dal JWT, oppure None."""
@@ -42,9 +41,10 @@ def registrazione():
     try:
         db.session.add(dat)
         db.session.commit()
-        return {"msg": "Utente creato"}, 201
+        return {"message": "Utente creato"}, 201
     except Exception as e:
         db.session.rollback()
+        print(str(e.orig))
         return {"errore": str(e.orig)}, 400
 
 
@@ -55,10 +55,10 @@ def login():
     # 1. estrai email e password in chiaro dall'header Basic
     auth = request.headers.get("Authorization", "")
     if not auth.startswith("Basic "):
-        return {"errore": "Credenziali mancanti nell'header"}, 401
-     passw_64=aut.split(" ")[1]
-    email= base64.b64decode(pass_64).decode("utf-8").split(":")[0]
-    password = base64.b64decode(pass_64).decode("utf-8").split(":")[1]
+     return {"errore": "Credenziali mancanti nell'header"}, 401
+    passw_64=auth.split(" ")[1]
+    email= base64.b64decode(passw_64).decode("utf-8").split(":")[0]
+    password = base64.b64decode(passw_64).decode("utf-8").split(":")[1]
     # 2. estrai l'utente dal DB tramite email
     utente = db.session.query(Utente).filter_by(email=email.strip()).first()
     if utente is None:
@@ -69,7 +69,7 @@ def login():
     password.encode(),
     utente.password_hash.encode()
 ):
-    return {"errore": "Credenziali non valide"}, 401
+     return {"errore": "Credenziali non valide"}, 401
 
     # 4. genera JWT
     payload = {
@@ -79,10 +79,10 @@ def login():
         "exp":   datetime.datetime.utcnow() + datetime.timedelta(hours=8)
     }
     token = jwt.encode(payload, current_app.config["SECRET_KEY"], algorithm="HS256")
-    return {"token": token}, 200
+    return {"token": token,"message":"Utente loggato"}, 200
 
 # ── PUT /utente/me ───────────────────────────────────────────────────────────
-@utenti_bp.route("/modifica", methods=["PUT"])
+@utenti_bp.route("/aggiorna", methods=["POST"])
 def aggiorna_utente():
 
     # 1. estrai l'id dal JWT
@@ -109,6 +109,8 @@ def aggiorna_utente():
 
     if "password" in data:
         password_hash=bcrypt.hashpw(data["password"].encode(), utente.salt).decode()
+    if "data_nascita" in data:
+        utente.data_nascita=data["data_nascita"]
 
     try:
         db.session.commit()

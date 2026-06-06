@@ -22,6 +22,7 @@ class Utente(db.Model):
             "data_nascita <= CURRENT_DATE - INTERVAL '18 years'",
             name="check_eta_18"
         ),
+        db.CheckConstraint("email  LIKE '____%@unive.it'",name="check_email")
     )
 
     pratiche_studente = db.relationship(

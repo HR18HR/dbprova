@@ -1,0 +1,63 @@
+.but {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #7a0019, #b5121b);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#ima {
+  width: 260px;
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  margin-bottom: 20px;
+}
+
+button {
+  width: 260px;
+  padding: 15px 20px;
+  border: 2px solid white;
+  border-radius: 8px;
+  background-color: white;
+  color: #7a0019;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+button:hover {
+  background-color: #7a0019;
+  color: white;
+  transform: translateY(-3px);
+}
+
+#login {
+  margin-top: 10px;
+}
+
+#registrazione {
+  background-color: transparent;
+  color: white;
+}
+
+#registrazione:hover {
+  background-color: white;
+  color: #7a0019;
+}
+
+@media (max-width: 600px) {
+  #ima {
+    width: 210px;
+  }
+
+  button {
+    width: 220px;
+  }
+}

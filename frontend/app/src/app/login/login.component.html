@@ -1,0 +1,43 @@
+<div class="top-bar">
+  <button class="btn-white" type="button" (click)="INDI()">
+    Registrazione
+  </button>
+</div>
+
+<div class="login-container">
+  <h2>Login</h2>
+
+  <input
+    type="email"
+    class="input-field"
+    placeholder="Email"
+    required
+    [(ngModel)]="username"
+  />
+
+  <input
+    type="password"
+    class="input-field"
+    placeholder="Password"
+    required
+    [(ngModel)]="password"
+    (keydown.enter)="Log_In()"
+  />
+
+  <button type="button" class="btn-login" (click)="Log_In()">
+    Log-In
+  </button>
+
+  <div class="footer-logo">
+    <img src="cafoscari.png" alt="Ca' Foscari Venezia">
+    <p>Università Ca' Foscari Venezia</p>
+  </div>
+</div>
+
+<div class="error-message" *ngIf="Errore.tentativi == 1">
+  {{ Errore.message }}
+</div>
+
+<div class="message" *ngIf="benvenuto == 'Benvenuto'">
+  {{ benvenuto }}
+</div>

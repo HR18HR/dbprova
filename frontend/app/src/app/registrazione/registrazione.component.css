@@ -1,0 +1,146 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #7a0019 0%, #a6192e 45%, #f5f1e8 45%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.card {
+  width: 100%;
+  max-width: 460px;
+  background: #ffffff;
+  padding: 34px;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+  border-top: 8px solid #7a0019;
+}
+
+h2 {
+  text-align: center;
+  color: #7a0019;
+  margin-bottom: 28px;
+  font-size: 28px;
+  letter-spacing: 0.5px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 7px;
+  color: #333;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #d8d2c4;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  transition: 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #7a0019;
+  box-shadow: 0 0 0 3px rgba(122, 0, 25, 0.15);
+  background-color: #fff;
+}
+
+button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  background-color: #7a0019;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+button:hover {
+  background-color: #a6192e;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(122, 0, 25, 0.3);
+}
+
+.alert {
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.alert-error {
+  background-color: #fdecec;
+  color: #9b001f;
+  border-left: 5px solid #9b001f;
+}
+
+.alert-success {
+  background-color: #eaf7ef;
+  color: #1d6b3a;
+  border-left: 5px solid #1d6b3a;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 22px;
+  color: #444;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #7a0019;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 26px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+}.footer-logo {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+}
+
+.footer-logo img {
+  width: 180px;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+.footer-logo p {
+  margin: 0;
+  color: #7a0019;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
