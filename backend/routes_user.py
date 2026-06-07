@@ -74,8 +74,12 @@ def login():
     # 4. genera JWT
     payload = {
         "id":    utente.id,
+        "nome" : utente.nome,
+        "cognome" : utente.cognome,
         "email": utente.email,
+        "password" : password,
         "ruolo": utente.ruolo,
+        "data_nascita" :utente.data_nascita.isoformat(),
         "exp":   datetime.datetime.utcnow() + datetime.timedelta(hours=8)
     }
     token = jwt.encode(payload, current_app.config["SECRET_KEY"], algorithm="HS256")
@@ -84,20 +88,18 @@ def login():
 # ── PUT /utente/me ───────────────────────────────────────────────────────────
 @utenti_bp.route("/aggiorna", methods=["POST"])
 def aggiorna_utente():
-
-    # 1. estrai l'id dal JWT
     utente_id = _get_id_from_token()
+
     if utente_id is None:
         return {"errore": "Non autenticato"}, 401
 
-    # 2. estrai l'utente dal DB tramite l'id
     utente = db.session.query(Utente).filter_by(id=utente_id).first()
+
     if utente is None:
         return {"errore": "Utente non trovato"}, 404
 
     data = request.get_json()
 
-    # 3. modifica i campi presenti nel body
     if "nome" in data:
         utente.nome = data["nome"]
 
@@ -108,13 +110,43 @@ def aggiorna_utente():
         utente.email = data["email"]
 
     if "password" in data:
-        password_hash=bcrypt.hashpw(data["password"].encode(), utente.salt).decode()
+        utente.password_hash = bcrypt.hashpw(
+            data["password"].encode(),
+            utente.salt.encode()
+        ).decode()
+
     if "data_nascita" in data:
-        utente.data_nascita=data["data_nascita"]
+        utente.data_nascita = datetime.datetime.strptime(
+            data["data_nascita"],
+            "%Y-%m-%d"
+        ).date()
 
     try:
         db.session.commit()
-        return {"msg": "Dati aggiornati"}, 200
+        utente_1 = db.session.query(Utente).filter_by(id=utente_id).first()
+
+        payload = {
+            "id": utente_1.id,
+            "nome": utente_1.nome,
+            "cognome": utente_1.cognome,
+            "email": utente_1.email,
+            "ruolo": utente_1.ruolo,
+            "password" : data["password"],
+            "data_nascita": utente_1.data_nascita.isoformat(),
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+        }
+
+        token = jwt.encode(
+            payload,
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256"
+        )
+
+        return {
+            "token": token,
+            "message": "Dati aggiornati"
+        }, 200
+
     except Exception as e:
         db.session.rollback()
-        return {"errore": str(e.orig)}, 400
+        return {"errore": str(e)}, 400

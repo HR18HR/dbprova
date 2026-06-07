@@ -23,6 +23,23 @@ db.init_app(app)
 with app.app_context():
     db.drop_all()
     db.create_all()
+    salt = bcrypt.gensalt().decode()
+
+    utente = Utente(
+    nome="Hamza",
+    cognome="Rofi",
+    email="hamza.rofi@unive.it",
+    password_hash=bcrypt.hashpw(
+        "123".encode(),
+        salt.encode()
+    ).decode(),
+    salt=salt,
+    ruolo="S",
+    data_nascita=datetime.strptime("12/12/2000","%d/%m/%Y")
+    )
+
+    db.session.add(utente)
+    db.session.commit()
     print("0k")
 
 

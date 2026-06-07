@@ -1,59 +1,89 @@
-<div class="dashboard">
+<div class="page">
 
-  <div class="header">
-    <div>
-      <h1>Area Studente Overseas</h1>
-      <p>Università Ca' Foscari Venezia</p>
+  <header class="header">
+
+    <div class="logo-area">
+      <img src="cafoscari.png" alt="Ca Foscari">
+
+      <div>
+        <h1>Overseas</h1>
+        <p>Portale Mobilità Internazionale</p>
+      </div>
     </div>
 
-    <img src="cafoscari.png" alt="Ca' Foscari">
-  </div>
-
-  <div class="actions-card">
-    <button class="btn-primary">
-      + Nuova pratica
+    <button class="btn-modifica" (click)="apriModifica()">
+      Modifica profilo
     </button>
 
-    <button class="btn-secondary">
-      Carica Learning Agreement
+  </header>
+
+</div>
+
+
+<div class="overlay" *ngIf="mostraModifica">
+
+  <div class="side-panel">
+
+    <button class="close-btn" (click)="chiudiModifica()">
+      ×
     </button>
-  </div>
 
-  <div class="pratiche-card">
-    <h2>Le mie pratiche</h2>
+    <h2>Modifica dati</h2>
+    <p class="subtitle">Aggiorna le informazioni del tuo profilo</p>
 
-    <div class="pratica">
-      <div class="pratica-header">
-        <h3>Pratica Overseas #1</h3>
-        <span class="badge warning">In attesa LA</span>
-      </div>
+    <label>ID</label>
+    <input
+      type="number"
+      [(ngModel)]="to.id"
+      disabled>
 
-      <p><strong>Anno accademico:</strong> 2025/2026</p>
-      <p><strong>Istituto:</strong> University of Tokyo</p>
-      <p><strong>Periodo:</strong> Primo semestre</p>
-      <p><strong>Docente referente:</strong> Prof. Mario Rossi</p>
+    <label>Nome</label>
+    <input
+      type="text"
+      [(ngModel)]="to.nome"
+      [placeholder]="to.nome">
 
-      <div class="pratica-buttons">
-        <button class="btn-edit">Modifica</button>
-        <button class="btn-delete">Elimina</button>
-      </div>
+    <label>Cognome</label>
+    <input
+      type="text"
+      [(ngModel)]="to.cognome"
+      [placeholder]="to.cognome">
+
+    <label>Email</label>
+    <input
+      type="email"
+      [(ngModel)]="to.email"
+      [placeholder]="to.email">
+
+    <label>Ruolo</label>
+    <input
+      type="text"
+      [(ngModel)]="to.ruolo"
+      [placeholder]="to.ruolo">
+
+    <label>Data di nascita</label>
+    <input
+      type="date"
+      [(ngModel)]="to.data_nascita">
+
+    <label>Password</label>
+    <input
+      type="password"
+      [(ngModel)]="to.password"
+      placeholder="Nuova password">
+
+    <button class="save-btn" (click)="aggiornaUtente()">
+      Salva modifiche
+    </button>
+
+    <div *ngIf="res.Pos == 1" class="success">
+      {{ message}}
     </div>
 
-    <div class="pratica">
-      <div class="pratica-header">
-        <h3>Pratica Overseas #2</h3>
-        <span class="badge success">Mobilità in corso</span>
-      </div>
-
-      <p><strong>Anno accademico:</strong> 2024/2025</p>
-      <p><strong>Istituto:</strong> University of Toronto</p>
-      <p><strong>Periodo:</strong> Intero anno</p>
-      <p><strong>Docente referente:</strong> Prof.ssa Laura Bianchi</p>
-
-      <div class="pratica-buttons">
-        <button class="btn-edit">Visualizza</button>
-      </div>
+    <div *ngIf="res.Neg == 1" class="error">
+      {{ message }}
     </div>
+
   </div>
 
 </div>

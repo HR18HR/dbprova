@@ -12,9 +12,12 @@ export interface UserM{
 }
 export interface Token{
   id:number,
+  nome:string,
+  cognome:string,
   email:string,
   ruolo:string,
-
+  password:string,
+  data_nascita :Date | null
   
 }
 
@@ -65,11 +68,11 @@ export class UserService {
 
 
 // Aggiorna i dati dell'utente (email, username, password) inviando una richiesta PUT con autenticazione
-  Update(email: string, password: string,data_nascita:Date,nome:string,cognome:string,token:string): Observable<{message:string}> {
+  Update(email: string, password: string,data_nascita:Date,nome:string,cognome:string,token:string): Observable<{token:string,message:string}> {
     const header = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
-    return this.Http.put<{message:string}>("http://localhost:5000/aggiorna", 
+    return this.Http.post<{token:string,message:string}>("http://localhost:5000/aggiorna", 
       { email: email,password: password,
         data_nascita:data_nascita,nome:nome,cognome:cognome
        }, { headers: header })

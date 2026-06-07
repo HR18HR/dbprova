@@ -1,141 +1,195 @@
-:host {
-  display: block;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #7a0019 0%, #a6192e 38%, #f5f1e8 38%);
-  font-family: Arial, Helvetica, sans-serif;
+body{
+    margin:0;
+    background:white;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.dashboard {
-  padding: 35px;
+/* HEADER */
+
+.header{
+    height:90px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:0 40px;
+
+    background:white;
+
+    border-bottom:4px solid #8b1538;
 }
 
-.header {
-  background: white;
-  border-radius: 18px;
-  padding: 25px 35px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 8px solid #7a0019;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-  margin-bottom: 30px;
+.logo-area{
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
-.header h1 {
-  color: #7a0019;
-  margin: 0;
+.logo-area img{
+    height:60px;
 }
 
-.header p {
-  margin: 6px 0 0;
-  color: #555;
-  font-weight: 600;
+.logo-area h1{
+    margin:0;
+    color:#8b1538;
+    font-size:28px;
 }
 
-.header img {
-  width: 170px;
+.logo-area p{
+    margin:0;
+    color:#666;
 }
 
-.actions-card,
-.pratiche-card {
-  background: white;
-  max-width: 950px;
-  margin: 0 auto 25px;
-  padding: 28px;
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+/* BOTTONE */
+
+.btn-modifica{
+    background:#8b1538;
+    color:white;
+
+    border:none;
+
+    padding:12px 24px;
+
+    border-radius:4px;
+
+    cursor:pointer;
+
+    font-weight:bold;
 }
 
-.actions-card {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
+.btn-modifica:hover{
+    background:#6f0f2c;
 }
 
-.pratiche-card h2 {
-  color: #7a0019;
-  margin-top: 0;
-  margin-bottom: 22px;
+/* OVERLAY */
+
+.overlay{
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,0.3);
+
+    display:flex;
+    justify-content:flex-end;
+
+    z-index:999;
 }
 
-.pratica {
-  background: #fafafa;
-  border-left: 6px solid #7a0019;
-  padding: 22px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+/* SIDEBAR */
+
+.side-panel{
+    width:420px;
+    height:100vh;
+
+    background:white;
+
+    padding:30px;
+
+    border-left:5px solid #8b1538;
+
+    box-shadow:-5px 0 20px rgba(0,0,0,0.15);
+
+    overflow-y:auto;
 }
 
-.pratica-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+.side-panel h2{
+    color:#8b1538;
+    margin-bottom:5px;
 }
 
-.pratica h3 {
-  margin: 0 0 15px;
-  color: #7a0019;
+.subtitle{
+    color:#666;
+    margin-bottom:25px;
 }
 
-.pratica p {
-  margin: 8px 0;
-  color: #333;
+.close-btn{
+    float:right;
+
+    border:none;
+    background:none;
+
+    font-size:30px;
+
+    cursor:pointer;
+
+    color:#8b1538;
 }
 
-.badge {
-  padding: 7px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: bold;
+label{
+    display:block;
+
+    margin-top:15px;
+    margin-bottom:5px;
+
+    color:#8b1538;
+
+    font-weight:bold;
 }
 
-.warning {
-  background: #fff2cc;
-  color: #8a5a00;
+input{
+    width:100%;
+
+    padding:10px;
+
+    border:1px solid #ccc;
+
+    border-radius:4px;
 }
 
-.success {
-  background: #e8f7ec;
-  color: #1e6d3d;
+input:focus{
+    outline:none;
+    border-color:#8b1538;
 }
 
-.pratica-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 18px;
-  flex-wrap: wrap;
+.save-btn{
+    width:100%;
+
+    margin-top:25px;
+
+    background:#8b1538;
+    color:white;
+
+    border:none;
+
+    padding:12px;
+
+    border-radius:4px;
+
+    font-weight:bold;
+
+    cursor:pointer;
 }
 
-button {
-  padding: 12px 18px;
-  border-radius: 8px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
+.save-btn:hover{
+    background:#6f0f2c;
 }
 
-.btn-primary {
-  background: #7a0019;
-  color: white;
+.success{
+    margin-top:15px;
+
+    background:#e8f5e9;
+
+    color:#2e7d32;
+
+    padding:10px;
+
+    border-left:4px solid #2e7d32;
 }
 
-.btn-secondary {
-  background: white;
-  color: #7a0019;
-  border: 2px solid #7a0019;
-}
+.error{
+    margin-top:15px;
 
-.btn-edit {
-  background: #d8b365;
-  color: white;
-}
+    background:#ffebee;
 
-.btn-delete {
-  background: #9b001f;
-  color: white;
-}
+    color:#c62828;
 
-button:hover {
-  opacity: 0.88;
+    padding:10px;
+
+    border-left:4px solid #c62828;
 }

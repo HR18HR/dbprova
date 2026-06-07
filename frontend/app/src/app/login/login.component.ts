@@ -20,7 +20,7 @@ export class LoginComponent {
   password: string = '';  // Campo per la password dell’utente
   Errore: { message: string, tentativi: number } = { message: '', tentativi: 0 }; // Oggetto per gestire i messaggi di errore e tentativi falliti
   benvenuto: string = ''; // Messaggio di benvenuto visualizzato all’utente dopo il login
-  ruolo:Token={id:0,email:" ",ruolo:" "}
+  ruolo:Token={id:0,email:" ",ruolo:" ",cognome:" ",nome:" ",data_nascita:null,password:""}
 
 
 
@@ -36,7 +36,7 @@ export class LoginComponent {
       next: data => {
         // Parsing brutale della risposta per ottenere il messaggio e il token (da sistemare meglio!)
         this.benvenuto = data.message = 'Benvenuto';
-        localStorage.setItem("jwt", data.token); // Attenzione: "token" sembra un errore di battitura per "token"
+        localStorage.setItem("jwt", data.token); // 
          this.ruolo=<Token>jwtDecode(data.token);
         // Se il token è stato salvato correttamente
         if (localStorage.getItem("jwt") != null) {
