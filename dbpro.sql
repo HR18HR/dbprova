@@ -24,9 +24,9 @@ CREATE TABLE istituti (
 CREATE TABLE pratiche (
     id SERIAL PRIMARY KEY,
 
-    studente_email INTEGER NOT NULL,
-    docente_email INTEGER NOT NULL,
-    nome_istituto INTEGER NOT NULL,
+    studente_email VARCHAR(150) NOT NULL,
+    docente_email VARCHAR(150),
+    nome_istituto VARCHAR(150),
 
     stato VARCHAR(10) NOT NULL DEFAULT 'ATT'
         CHECK (stato IN ('ATT', 'PPC', 'MC', 'C')),
@@ -38,31 +38,41 @@ CREATE TABLE pratiche (
 
     CONSTRAINT fk_pratica_studente
         FOREIGN KEY (studente_email)
-        REFERENCES utenti(email),
+        REFERENCES utenti(email)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
 
     CONSTRAINT fk_pratica_docente
         FOREIGN KEY (docente_email)
-        REFERENCES utenti(email),
+        REFERENCES utenti(email)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
 
     CONSTRAINT fk_pratica_istituto
         FOREIGN KEY (nome_istituto)
         REFERENCES istituti(nome)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE esami (
     id_esame SERIAL PRIMARY KEY,
-    pratica_id INTEGER NOT NULL,
+    pratica_id INTEGER,
     nome_esame VARCHAR(150) NOT NULL,
     crediti INTEGER NOT NULL CHECK (crediti > 0),
     id_esame_estero INTEGER,
 
     CONSTRAINT fk_esame_pratica
         FOREIGN KEY (pratica_id)
-        REFERENCES pratiche(id),
+        REFERENCES pratiche(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
 
     CONSTRAINT fk_esame_equivalente
         FOREIGN KEY (id_esame_estero)
-        REFERENCES esami(id_esame),
+        REFERENCES esami(id_esame)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
 
     CONSTRAINT uq_pratica_esame
         UNIQUE (pratica_id, nome_esame)
@@ -77,6 +87,8 @@ CREATE TABLE learning_agreement (
     CONSTRAINT fk_learning_pratica
         FOREIGN KEY (pratica_id)
         REFERENCES pratiche(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE transcript_of_records (
@@ -88,4 +100,6 @@ CREATE TABLE transcript_of_records (
     CONSTRAINT fk_transcript_pratica
         FOREIGN KEY (pratica_id)
         REFERENCES pratiche(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
