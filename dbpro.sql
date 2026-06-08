@@ -15,8 +15,7 @@ CREATE TABLE utenti (
 );
 
 CREATE TABLE istituti (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
+    nome VARCHAR(150) PRIMARY KEY,
     indirizzo TEXT,
     citta VARCHAR(100),
     paese VARCHAR(100) NOT NULL
@@ -25,9 +24,9 @@ CREATE TABLE istituti (
 CREATE TABLE pratiche (
     id SERIAL PRIMARY KEY,
 
-    studente_id INTEGER NOT NULL,
-    docente_id INTEGER NOT NULL,
-    id_istituto INTEGER NOT NULL,
+    studente_email INTEGER NOT NULL,
+    docente_email INTEGER NOT NULL,
+    nome_istituto INTEGER NOT NULL,
 
     stato VARCHAR(10) NOT NULL DEFAULT 'ATT'
         CHECK (stato IN ('ATT', 'PPC', 'MC', 'C')),
@@ -38,16 +37,16 @@ CREATE TABLE pratiche (
     data_fine DATE,
 
     CONSTRAINT fk_pratica_studente
-        FOREIGN KEY (studente_id)
-        REFERENCES utenti(id),
+        FOREIGN KEY (studente_email)
+        REFERENCES utenti(email),
 
     CONSTRAINT fk_pratica_docente
-        FOREIGN KEY (docente_id)
-        REFERENCES utenti(id),
+        FOREIGN KEY (docente_email)
+        REFERENCES utenti(email),
 
     CONSTRAINT fk_pratica_istituto
-        FOREIGN KEY (id_istituto)
-        REFERENCES istituti(id)
+        FOREIGN KEY (nome_istituto)
+        REFERENCES istituti(nome)
 );
 
 CREATE TABLE esami (
