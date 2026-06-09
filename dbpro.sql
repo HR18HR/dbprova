@@ -23,31 +23,25 @@ CREATE TABLE istituti (
 
 CREATE TABLE pratiche (
     id SERIAL PRIMARY KEY,
-
     studente_email VARCHAR(150) NOT NULL,
     docente_email VARCHAR(150),
     nome_istituto VARCHAR(150),
-
     stato VARCHAR(10) NOT NULL DEFAULT 'ATT'
         CHECK (stato IN ('ATT', 'PPC', 'MC', 'C')),
-
     data_creazione TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     motivazione TEXT,
     data_inizio DATE NOT NULL,
     data_fine DATE,
-
     CONSTRAINT fk_pratica_studente
         FOREIGN KEY (studente_email)
         REFERENCES utenti(email)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-
     CONSTRAINT fk_pratica_docente
         FOREIGN KEY (docente_email)
         REFERENCES utenti(email)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-
     CONSTRAINT fk_pratica_istituto
         FOREIGN KEY (nome_istituto)
         REFERENCES istituti(nome)
@@ -56,26 +50,39 @@ CREATE TABLE pratiche (
 );
 
 CREATE TABLE esami (
-    id_esame SERIAL PRIMARY KEY,
-    pratica_id INTEGER,
-    nome_esame VARCHAR(150) NOT NULL,
-    crediti INTEGER NOT NULL CHECK (crediti > 0),
-    id_esame_estero INTEGER,
+    id VARCHAR(20) PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    crediti INTEGER NOT NULL CHECK (crediti > 0)
+);
 
-    CONSTRAINT fk_esame_pratica
+CREATE TABLE esami_esteri (
+    id VARCHAR(20) PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    crediti INTEGER NOT NULL CHECK (crediti > 0)
+);
+
+CREATE TABLE esami_pratica (
+    id SERIAL PRIMARY KEY,
+    pratica_id INTEGER NOT NULL,
+    esame_locale_id VARCHAR(20) NOT NULL,
+    esame_estero_id VARCHAR(20) NOT NULL,
+    CONSTRAINT fk_ep_pratica
         FOREIGN KEY (pratica_id)
         REFERENCES pratiche(id)
-        ON DELETE SET NULL
+        ON DELETE CASCADE
         ON UPDATE CASCADE,
-
-    CONSTRAINT fk_esame_equivalente
-        FOREIGN KEY (id_esame_estero)
-        REFERENCES esami(id_esame)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE,
-
-    CONSTRAINT uq_pratica_esame
-        UNIQUE (pratica_id, nome_esame)
+    CONSTRAINT fk_ep_esame_locale
+        FOREIGN KEY (esame_locale_id)
+        REFERENCES esami(id)
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_ep_esame_estero
+        FOREIGN KEY (esame_estero_id)
+        REFERENCES esami_esteri(id)
+        ON DELETE RESTRICT,
+    CONSTRAINT uq_pratica_esame_locale
+        UNIQUE (pratica_id, esame_locale_id),
+    CONSTRAINT uq_pratica_esame_estero
+        UNIQUE (pratica_id, esame_estero_id)
 );
 
 CREATE TABLE learning_agreement (
@@ -83,7 +90,6 @@ CREATE TABLE learning_agreement (
     pratica_id INTEGER NOT NULL UNIQUE,
     data_upload TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     file_pdf BYTEA,
-
     CONSTRAINT fk_learning_pratica
         FOREIGN KEY (pratica_id)
         REFERENCES pratiche(id)
@@ -96,7 +102,6 @@ CREATE TABLE transcript_of_records (
     pratica_id INTEGER NOT NULL UNIQUE,
     data_upload TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     file_pdf BYTEA,
-
     CONSTRAINT fk_transcript_pratica
         FOREIGN KEY (pratica_id)
         REFERENCES pratiche(id)
