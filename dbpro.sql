@@ -29,7 +29,7 @@ CREATE TABLE pratiche (
     stato VARCHAR(30) NOT NULL DEFAULT 'CREATA'
         CHECK (stato IN (
             'CREATA',
-            'ATT_APPROVAZIONE',
+            'ATTESA_APPROVAZIONE',
             'APPROVATA_DOCENTE',
             'APPROVATA_UFFICIO',
             'MOBILITA_IN_CORSO',
@@ -58,14 +58,14 @@ CREATE TABLE pratiche (
 );
 
 CREATE TABLE esami (
-    id VARCHAR(20) PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
+    nome VARCHAR(150) PRIMARY KEY,
     crediti INTEGER NOT NULL CHECK (crediti > 0)
+    esame_estero FOREIGN KEY REFERENCES esami_esteri(nome)
+        ON DELETE SET NULL
 );
 
 CREATE TABLE esami_esteri (
-    id VARCHAR(20) PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
+    nome VARCHAR(150) PRIMARY KEY,
     crediti INTEGER NOT NULL CHECK (crediti > 0)
 );
 
