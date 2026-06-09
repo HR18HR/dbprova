@@ -1,4 +1,4 @@
-```sql
+
 CREATE TABLE utenti (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
