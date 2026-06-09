@@ -26,8 +26,16 @@ CREATE TABLE pratiche (
     studente_email VARCHAR(150) NOT NULL,
     docente_email VARCHAR(150),
     nome_istituto VARCHAR(150),
-    stato VARCHAR(10) NOT NULL DEFAULT 'ATT'
-        CHECK (stato IN ('ATT', 'PPC', 'MC', 'C')),
+    stato VARCHAR(30) NOT NULL DEFAULT 'CREATA'
+        CHECK (stato IN (
+            'CREATA',
+            'ATT_APPROVAZIONE',
+            'APPROVATA_DOCENTE',
+            'APPROVATA_UFFICIO',
+            'MOBILITA_IN_CORSO',
+            'APPROVATO_TRANSCRIPT',
+            'CHIUSA'
+        )),
     data_creazione TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     motivazione TEXT,
     data_inizio DATE NOT NULL,
