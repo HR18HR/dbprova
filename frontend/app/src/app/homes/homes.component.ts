@@ -17,7 +17,8 @@ to:Token={id:0,nome:"",cognome:"",email:"",ruolo:"",data_nascita:null,password:"
 risposta:string=''; //mostar i messaggi ricevuti dal backend
 res:{Pos:number,Neg:number}={Pos:0,Neg:0} //oggetto che mostra il div della risposta backend
 message:string=" "
- mostraModifica: boolean = false;
+mostraModifica: boolean = false;
+
 
 constructor( public user:UserService) {}
 
@@ -30,12 +31,10 @@ constructor( public user:UserService) {}
 
     }
   }
-   apriModifica() {
-    this.mostraModifica = true;
-  }
 
-  chiudiModifica() {
-    this.mostraModifica = false;
+  
+  VisualizzaModifica() {
+    !this.mostraModifica ;
   }
 
 
