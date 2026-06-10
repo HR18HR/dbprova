@@ -23,7 +23,7 @@ CREATE TABLE istituti (
 );
 
 CREATE TABLE pratiche (
-    id SERIAL PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     studente_email VARCHAR(150) NOT NULL,
     docente_email VARCHAR(150),
     nome_istituto VARCHAR(150),
@@ -77,7 +77,7 @@ CREATE TABLE esami (
 
 CREATE TABLE esami_pratica (
     id SERIAL PRIMARY KEY,
-    pratica_id INTEGER NOT NULL,
+    pratica_id TEXT NOT NULL,
     esame_locale_nome VARCHAR(150) NOT NULL,
     esame_estero_id VARCHAR(20) NOT NULL,
     CONSTRAINT fk_ep_pratica
