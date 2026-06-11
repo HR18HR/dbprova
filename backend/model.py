@@ -162,15 +162,15 @@ class Pratica(db.Model):
     )
 
     def __init__(
-        self,
-        id,
-        studente_email,
-        data_inizio,
-        docente_email=None,
-        nome_istituto=None,
-        stato="CREATA",
-        data_fine=None,
-        motivazione=None
+            self,
+            id,
+            studente_email,
+            data_inizio,
+            docente_email=None,
+            nome_istituto=None,
+            stato="CREATA",
+            data_fine=None,
+            motivazione=None
     ):
         self.id = id
         self.studente_email = studente_email
@@ -320,10 +320,10 @@ class EsamePratica(db.Model):
     )
 
     def __init__(
-        self,
-        pratica_id,
-        esame_locale_nome,
-        esame_estero_id
+            self,
+            pratica_id,
+            esame_locale_nome,
+            esame_estero_id
     ):
         self.pratica_id = pratica_id
         self.esame_locale_nome = esame_locale_nome

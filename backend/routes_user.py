@@ -4,7 +4,7 @@ import jwt
 import bcrypt
 from flask import Blueprint, request, jsonify, current_app
 
-from model import db, Utente, Istituto, Pratica, TranscriptOfRecords, LearningAgreement, Esame
+from model import db, Utente, Istituto, Pratica
 
 utenti_bp = Blueprint("users", __name__)
 
