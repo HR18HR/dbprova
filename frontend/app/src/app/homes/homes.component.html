@@ -1,3 +1,4 @@
+
 <div class="page">
 
   <header class="header">
@@ -11,20 +12,141 @@
       </div>
     </div>
 
-    <button class="btn-modifica" (click)="apriModifica()">
+    <button class="btn-modifica" (click)="VisualizzaModifica()">
       Modifica profilo
     </button>
 
   </header>
 
+  <button class="btn-crea-pratica" (click)="VisualizzaPratica()">
+    📄 Crea Pratica
+  </button>
+  <div class="pratiche-container">
+
+  <div
+    class="pratica-card"
+    *ngFor="let pratica of pratiche_1">
+
+    <div class="header-pratica">
+
+      <div>
+        <h2>Pratica Erasmus</h2>
+        <p>ID pratica: {{ pratica.id }}</p>
+      </div>
+
+      <div class="badge">
+        {{ pratica.stato }}
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <h3>Dati della pratica</h3>
+
+      <div class="grid">
+
+        <div class="field">
+          <label>Email studente</label>
+          <input
+            type="text"
+            [value]="pratica.studente_email"
+            readonly>
+        </div>
+
+        <div class="field">
+          <label>Email docente</label>
+          <input
+            type="text"
+            [value]="pratica.docente_email"
+            readonly>
+        </div>
+
+        <div class="field">
+          <label>Istituto estero</label>
+          <input
+            type="text"
+            [value]="pratica.nome_istituto"
+            readonly>
+        </div>
+
+        <div class="field">
+          <label>Stato</label>
+          <input
+            type="text"
+            [value]="pratica.stato"
+            readonly>
+        </div>
+
+        <div class="field">
+          <label>Data inizio</label>
+          <input
+            type="text"
+            [value]="pratica.data_inizio"
+            readonly>
+        </div>
+
+        <div class="field">
+          <label>Data fine</label>
+          <input
+            type="text"
+            [value]="pratica.data_fine"
+            readonly>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <h3>Esami associati</h3>
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Esame locale</th>
+            <th>Esame estero</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let esame of pratica.esami">
+
+            <td>
+              {{ esame.esame_locale_nome }}
+            </td>
+
+            <td>
+              {{ esame.esame_estero_nome }}
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
 </div>
 
+</div>
+
+
+<!-- MODIFICA PROFILO -->
 
 <div class="overlay" *ngIf="mostraModifica">
 
   <div class="side-panel">
 
-    <button class="close-btn" (click)="chiudiModifica()">
+    <button class="close-btn" (click)="VisualizzaModifica()">
       ×
     </button>
 
@@ -32,39 +154,22 @@
     <p class="subtitle">Aggiorna le informazioni del tuo profilo</p>
 
     <label>ID</label>
-    <input
-      type="number"
-      [(ngModel)]="to.id"
-      disabled>
+    <input type="number" [(ngModel)]="to.id" disabled>
 
     <label>Nome</label>
-    <input
-      type="text"
-      [(ngModel)]="to.nome"
-      [placeholder]="to.nome">
+    <input type="text" [(ngModel)]="to.nome" [placeholder]="to.nome">
 
     <label>Cognome</label>
-    <input
-      type="text"
-      [(ngModel)]="to.cognome"
-      [placeholder]="to.cognome">
+    <input type="text" [(ngModel)]="to.cognome" [placeholder]="to.cognome">
 
     <label>Email</label>
-    <input
-      type="email"
-      [(ngModel)]="to.email"
-      [placeholder]="to.email">
+    <input type="email" [(ngModel)]="to.email" [placeholder]="to.email">
 
     <label>Ruolo</label>
-    <input
-      type="text"
-      [(ngModel)]="to.ruolo"
-      [placeholder]="to.ruolo">
+    <input type="text" [(ngModel)]="to.ruolo" [placeholder]="to.ruolo">
 
     <label>Data di nascita</label>
-    <input
-      type="date"
-      [(ngModel)]="to.data_nascita">
+    <input type="date" [(ngModel)]="to.data_nascita">
 
     <label>Password</label>
     <input
@@ -77,12 +182,169 @@
     </button>
 
     <div *ngIf="res.Pos == 1" class="success">
-      {{ message}}
+      {{ message }}
     </div>
 
     <div *ngIf="res.Neg == 1" class="error">
       {{ message }}
     </div>
+
+  </div>
+
+</div>
+
+
+<!-- CREAZIONE PRATICA -->
+
+<div class="overlay" *ngIf="mostraPratica">
+
+  <div class="side-panel pratica-panel">
+
+    <button class="close-btn" (click)="chiudiPratica()">
+      ×
+    </button>
+
+    <h2>Nuova Pratica</h2>
+    <p class="subtitle">Inserisci dati, esami e Learning Agreement</p>
+
+    <label>ID Pratica</label>
+    <input
+      type="text"
+      [(ngModel)]="idPratica"
+      readonly>
+
+    <label>Email Studente</label>
+    <input
+      type="email"
+      [(ngModel)]="emailStudente"
+      readonly>
+
+    <label>Email Docente</label>
+    <input
+      type="email"
+      [(ngModel)]="emailDocente"
+      placeholder="Email docente">
+
+    <label>Istituto estero</label>
+
+    <select [(ngModel)]="nomeIstituto">
+
+      <option value="">
+        Seleziona istituto
+      </option>
+
+      <option
+        *ngFor="let istituto of istituti"
+        [value]="istituto.nome">
+
+        {{ istituto.nome }}
+
+      </option>
+
+    </select>
+
+    <label>Data partenza</label>
+
+    <input
+      type="date"
+      [(ngModel)]="dataPartenza">
+
+    <label>Data rientro</label>
+
+    <input
+      type="date"
+      [(ngModel)]="dataRientro">
+
+    <label>Semestre</label>
+
+    <select [(ngModel)]="semestre">
+
+      <option value="">
+        Seleziona semestre
+      </option>
+
+      <option value="1">
+        Primo semestre
+      </option>
+
+      <option value="2">
+        Secondo semestre
+      </option>
+
+      <option value="A">
+        Annuale
+      </option>
+
+    </select>
+
+    <h3 class="section-title">
+      Esami della pratica
+    </h3>
+
+    <div
+      class="esame-row"
+      *ngFor="let esame of esamiPratica; let i = index">
+
+      <select [(ngModel)]="esame.esame_locale_nome">
+
+        <option value="">
+          Seleziona esame interno
+        </option>
+
+        <option
+          *ngFor="let e of esami"
+          [value]="e.nome">
+
+          {{ e.nome }} ({{ e.crediti }} CFU)
+
+        </option>
+
+      </select>
+
+      <select [(ngModel)]="esame.esame_estero_nome">
+
+        <option value="">
+          Seleziona esame estero
+        </option>
+
+        <option
+          *ngFor="let e of esami"
+          [value]="e.nome_esame_estero"
+          [disabled]="!e.nome_esame_estero">
+
+          {{ e.nome_esame_estero }}
+
+        </option>
+
+      </select>
+
+      <button
+        type="button"
+        class="trash-btn"
+        (click)="rimuoviEsamePratica(i)">
+        🗑
+      </button>
+
+    </div>
+
+    <button
+      type="button"
+      class="add-btn"
+      (click)="aggiungiRigaEsame()">
+      + Aggiungi esame
+    </button>
+
+    <label>Carica Learning Agreement</label>
+
+    <input
+      type="file"
+      (change)="selezionaFile($event)">
+
+    <button
+      class="save-btn"
+      (click)="creaPratica()">
+      Invia Pratica
+    </button>
 
   </div>
 
