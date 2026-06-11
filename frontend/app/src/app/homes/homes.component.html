@@ -21,134 +21,9 @@
   <button class="btn-crea-pratica" (click)="VisualizzaPratica()">
     📄 Crea Pratica
   </button>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  <div class="pratiche-container">
-
-  <div
-    class="pratica-card"
-    *ngFor="let pratica of pratiche_1">
-
-    <div class="header-pratica">
-
-      <div>
-        <h2>Pratica Erasmus</h2>
-        <p>ID pratica: {{ pratica.id }}</p>
-      </div>
-
-      <div class="badge">
-        {{ pratica.stato }}
-      </div>
-
-    </div>
-
-    <div class="section">
-
-      <h3>Dati della pratica</h3>
-
-      <div class="grid">
-
-        <div class="field">
-          <label>Email studente</label>
-          <input
-            type="text"
-            [value]="pratica.studente_email"
-            readonly>
-        </div>
-
-        <div class="field">
-          <label>Email docente</label>
-          <input
-            type="text"
-            [value]="pratica.docente_email"
-            readonly>
-        </div>
-
-        <div class="field">
-          <label>Istituto estero</label>
-          <input
-            type="text"
-            [value]="pratica.nome_istituto"
-            readonly>
-        </div>
-
-        <div class="field">
-          <label>Stato</label>
-          <input
-            type="text"
-            [value]="pratica.stato"
-            readonly>
-        </div>
-
-        <div class="field">
-          <label>Data inizio</label>
-          <input
-            type="text"
-            [value]="pratica.data_inizio"
-            readonly>
-        </div>
-
-        <div class="field">
-          <label>Data fine</label>
-          <input
-            type="text"
-            [value]="pratica.data_fine"
-            readonly>
-        </div>
-
-      </div>
-
-    </div>
-
-    <div class="section">
-
-      <h3>Esami associati</h3>
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>Esame locale</th>
-            <th>Esame estero</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          <tr *ngFor="let esame of pratica.esami">
-
-            <td>
-              {{ esame.esame_locale_nome }}
-            </td>
-
-            <td>
-              {{ esame.esame_estero_nome }}
-            </td>
-
-          </tr>
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  </div>
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
 </div>
 
-</div>
-
-
-<!-- MODIFICA PROFILO -->
-
-<!-- MODIFICA PROFILO -->
 
 <!-- MODIFICA PROFILO -->
 
@@ -311,15 +186,7 @@
 
       </select>
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-      <select [(ngModel)]="esame.esame_estero_nome">
-=======
       <select [(ngModel)]="esame.esame_estero_id">
->>>>>>> Stashed changes
-=======
-      <select [(ngModel)]="esame.esame_estero_id">
->>>>>>> Stashed changes
 
         <option value="">
           Seleziona esame estero
