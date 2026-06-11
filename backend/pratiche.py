@@ -25,7 +25,25 @@ def _get_id_from_token():
         return payload["id"]
     except jwt.PyJWTError:
         return None
+def _get_email_from_token():
+    auth = request.headers.get("Authorization", "")
 
+    if not auth.startswith("Bearer "):
+        return None
+
+    token = auth.split(" ", 1)[1]
+
+    try:
+        payload = jwt.decode(
+            token,
+            current_app.config["SECRET_KEY"],
+            algorithms=["HS256"]
+        )
+
+        return payload.get("email")
+
+    except jwt.PyJWTError:
+        return None
 
 @pratiche_bp.route("/istituti", methods=["GET"])
 def get_istituti():
@@ -55,12 +73,11 @@ def get_esami():
     if utente_id is None:
         return {"errore": "Non autenticato"}, 401
 
-
     esami = (
         db.session.query(Esame, EsameEstero.nome.label("nome_estero"))
         .outerjoin(
             EsameEstero,
-            Esame.id_esame_estero == EsameEstero.id
+            Esame.nome_esame_estero == EsameEstero.nome
         )
         .all()
     )
@@ -81,9 +98,7 @@ def crea_pratica():
     utente_id = _get_id_from_token()
 
     if utente_id is None:
-        return jsonify({
-            "errore": "Non autenticato"
-        }), 401
+        return jsonify({"errore": "Non autenticato"}), 401
 
     id_pratica = request.form.get("id_pratica")
     email_studente = request.form.get("email_studente")
@@ -93,110 +108,40 @@ def crea_pratica():
     data_partenza = request.form.get("data_partenza")
     data_rientro = request.form.get("data_rientro")
 
-    semestre = request.form.get("semestre")
-
     esami_json = request.form.get("esami")
-
     file = request.files.get("agreement")
 
     if not id_pratica:
-        return jsonify({
-            "errore": "ID pratica mancante"
-        }), 400
+        return jsonify({"errore": "ID pratica mancante"}), 400
 
     if not email_studente:
-        return jsonify({
-            "errore": "Email studente mancante"
-        }), 400
+        return jsonify({"errore": "Email studente mancante"}), 400
 
     if not data_partenza:
-        return jsonify({
-            "errore": "Data partenza mancante"
-        }), 400
+        return jsonify({"errore": "Data partenza mancante"}), 400
 
     try:
-
-        data_inizio = datetime.strptime(
-            data_partenza,
-            "%Y-%m-%d"
-        ).date()
-
+        data_inizio = datetime.strptime(data_partenza, "%Y-%m-%d").date()
     except ValueError:
-
-        return jsonify({
-            "errore": "Formato data partenza non valido"
-        }), 400
+        return jsonify({"errore": "Formato data partenza non valido"}), 400
 
     data_fine = None
 
     if data_rientro:
-
         try:
-
-            data_fine = datetime.strptime(
-                data_rientro,
-                "%Y-%m-%d"
-            ).date()
-
+            data_fine = datetime.strptime(data_rientro, "%Y-%m-%d").date()
         except ValueError:
-
-            return jsonify({
-                "errore": "Formato data rientro non valido"
-            }), 400
+            return jsonify({"errore": "Formato data rientro non valido"}), 400
 
     try:
-
-        esami = json.loads(
-            esami_json if esami_json else "[]"
-        )
-
+        esami = json.loads(esami_json) if esami_json else []
     except Exception:
+        return jsonify({"errore": "Formato esami non valido"}), 400
 
-        return jsonify({
-            "errore": "Formato esami non valido"
-        }), 400
-
-    pratica_esistente = Pratica.query.get(
-        id_pratica
-    )
-
-    if pratica_esistente:
-
-        return jsonify({
-            "errore": "Pratica già esistente"
-        }), 409
+    if Pratica.query.get(id_pratica):
+        return jsonify({"errore": "Pratica già esistente"}), 409
 
     try:
-
-        percorso_file = None
-
-        if file:
-
-            cartella_studente = os.path.join(
-                "uploads",
-                secure_filename(
-                    email_studente.replace("@", "_")
-                )
-            )
-
-            os.makedirs(
-                cartella_studente,
-                exist_ok=True
-            )
-
-            nome_file = secure_filename(
-                file.filename
-            )
-
-            percorso_file = os.path.join(
-                cartella_studente,
-                nome_file
-            )
-
-            file.save(
-                percorso_file
-            )
-
         nuova_pratica = Pratica(
             id=id_pratica,
             studente_email=email_studente,
@@ -207,36 +152,85 @@ def crea_pratica():
             stato="CREATA"
         )
 
-        db.session.add(
-            nuova_pratica
-        )
+        db.session.add(nuova_pratica)
 
         for e in esami:
+            esame_locale_nome = e.get("esame_locale_nome")
+            esame_estero_nome = e.get("esame_estero_nome")
+
+            if not esame_locale_nome or not esame_estero_nome:
+                db.session.rollback()
+                return jsonify({
+                    "errore": "Ogni esame deve avere esame_locale_nome ed esame_estero_nome"
+                }), 400
 
             nuovo_esame = EsamePratica(
                 pratica_id=id_pratica,
-                esame_locale_nome=e["esame_locale_nome"],
-                esame_estero_id=e["esame_estero_id"]
+                esame_locale_nome=esame_locale_nome,
+                esame_estero_nome=esame_estero_nome
             )
 
-            db.session.add(
-                nuovo_esame
+            db.session.add(nuovo_esame)
+
+        if file:
+            cartella_studente = os.path.join(
+                "uploads",
+                secure_filename(email_studente.replace("@", "_"))
             )
+
+            os.makedirs(cartella_studente, exist_ok=True)
+
+            nome_file = secure_filename(file.filename)
+
+            percorso_file = os.path.join(
+                cartella_studente,
+                nome_file
+            )
+
+            file.save(percorso_file)
 
         db.session.commit()
 
         return jsonify({
-            "message":
-                "Pratica creata correttamente"
+            "message": "Pratica creata correttamente"
         }), 201
 
     except Exception as e:
-
         db.session.rollback()
 
         return jsonify({
-            "errore":
-                "Errore durante la creazione",
-            "dettaglio":
-                print(str(e))
+            "errore": "Errore durante la creazione",
+            "dettaglio": str(e)
         }), 500
+
+
+
+
+@pratiche_bp.route("/pratiche", methods=["GET"])
+def get_pratiche_utente():
+
+    id = _get_email_from_token()
+
+    if id is None:
+        return jsonify({
+            "errore": "Non autenticato"
+        }), 401
+
+    pratiche = Pratica.query.filter_by(
+        id=id
+    ).all()
+
+    return jsonify([
+        {
+            "id": pratica.id,
+            "studente_email": pratica.studente_email,
+            "docente_email": pratica.docente_email,
+            "nome_istituto": pratica.nome_istituto,
+            "stato": pratica.stato,
+            "data_inizio": pratica.data_inizio.isoformat(),
+            "data_fine": pratica.data_fine.isoformat() if pratica.data_fine else None,
+            "data_creazione": pratica.data_creazione.isoformat(),
+            "motivazione": pratica.motivazione
+        }
+        for pratica in pratiche
+    ]), 200

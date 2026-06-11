@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from datetime import date
 import bcrypt
 from  bcrypt  import hashpw
 from flask import Flask
@@ -52,26 +52,40 @@ with app.app_context():
     Istituto(nome="Charles University Prague",             paese="Rep. Ceca",    citta="Praha",      indirizzo="Ovocný trh 560/5, 116 36 Praha 1"),
 ]
 
-    esami_esteri = [
-        EsameEstero(id="EE001", nome="Introduction to Algorithms", crediti=6),
-        EsameEstero(id="EE002", nome="Database Systems",           crediti=6),
-        EsameEstero(id="EE003", nome="Software Engineering",       crediti=9),
-        EsameEstero(id="EE004", nome="Computer Networks",          crediti=6),
-        EsameEstero(id="EE005", nome="Artificial Intelligence",    crediti=9),
-    ]
-
     esami = [
-        Esame(nome="Algoritmi e Strutture Dati", crediti=6, id_esame_estero="EE001"),
-        Esame(nome="Basi di Dati",               crediti=6, id_esame_estero="EE002"),
-        Esame(nome="Ingegneria del Software",    crediti=9, id_esame_estero="EE003"),
-        Esame(nome="Reti di Calcolatori",        crediti=6, id_esame_estero="EE004"),
-        Esame(nome="Intelligenza Artificiale",   crediti=9, id_esame_estero="EE005"),
-        Esame(nome="Analisi Matematica",         crediti=9),
-        Esame(nome="Fisica",                     crediti=6),
+        Esame("Algoritmi e Strutture Dati", 6, "Introduction to Algorithms"),
+        Esame("Basi di Dati", 6, "Database Systems"),
+        Esame("Ingegneria del Software", 9, "Software Engineering"),
+        Esame("Reti di Calcolatori", 6, "Computer Networks"),
+        Esame("Intelligenza Artificiale", 9, "Artificial Intelligence"),
+        Esame("Sistemi Operativi", 6, "Operating Systems"),
+        Esame("Architettura degli Elaboratori", 6, "Computer Architecture"),
+        Esame("Apprendimento Automatico", 9, "Machine Learning"),
+        Esame("Sicurezza Informatica", 6, "Cyber Security"),
+        Esame("Tecnologie Web", 6, "Web Development"),
+    ]
+
+    esami_esteri = [
+        EsameEstero(nome="Introduction to Algorithms", crediti=6),
+        EsameEstero(nome="Database Systems", crediti=6),
+        EsameEstero(nome="Software Engineering", crediti=9),
+        EsameEstero(nome="Computer Networks", crediti=6),
+        EsameEstero(nome="Artificial Intelligence", crediti=9),
+        EsameEstero(nome="Operating Systems", crediti=6),
+        EsameEstero(nome="Computer Architecture", crediti=6),
+        EsameEstero(nome="Machine Learning", crediti=9),
+        EsameEstero(nome="Cyber Security", crediti=6),
+        EsameEstero(nome="Web Development", crediti=6),
+        EsameEstero(nome="Human Computer Interaction", crediti=6),
+        EsameEstero(nome="Distributed Systems", crediti=6),
+        EsameEstero(nome="Data Mining", crediti=6),
+        EsameEstero(nome="Mobile Application Development", crediti=6),
+        EsameEstero(nome="Cloud Computing", crediti=6),
     ]
 
 
-    from datetime import date
+
+
 
     docente = Utente(
         nome="Mario",
@@ -87,10 +101,10 @@ with app.app_context():
     db.session.commit()
 
     db.session.add_all(esami_esteri)
-    db.session.flush()
-    db.session.add_all(esami)
     db.session.commit()
 
+    db.session.add_all(esami)
+    db.session.commit()
     db.session.add_all(istituti)
     db.session.commit()
 

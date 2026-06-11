@@ -36,8 +36,7 @@ class Utente(db.Model):
         back_populates="docente"
     )
 
-    def __init__(self, nome, cognome, email, password_hash,
-                 salt, ruolo, data_nascita):
+    def __init__(self, nome, cognome, email, password_hash, salt, ruolo, data_nascita):
         self.nome = nome
         self.cognome = cognome
         self.email = email
@@ -55,10 +54,7 @@ class Istituto(db.Model):
     citta = db.Column(db.String(100))
     paese = db.Column(db.String(100), nullable=False)
 
-    pratiche = db.relationship(
-        "Pratica",
-        back_populates="istituto"
-    )
+    pratiche = db.relationship("Pratica", back_populates="istituto")
 
     def __init__(self, nome, indirizzo=None, citta=None, paese=None):
         self.nome = nome
@@ -74,37 +70,21 @@ class Pratica(db.Model):
 
     studente_email = db.Column(
         db.String(150),
-        db.ForeignKey(
-            "utenti.email",
-            ondelete="CASCADE",
-            onupdate="CASCADE"
-        ),
+        db.ForeignKey("utenti.email", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False
     )
 
     docente_email = db.Column(
         db.String(150),
-        db.ForeignKey(
-            "utenti.email",
-            ondelete="SET NULL",
-            onupdate="CASCADE"
-        )
+        db.ForeignKey("utenti.email", ondelete="SET NULL", onupdate="CASCADE")
     )
 
     nome_istituto = db.Column(
         db.String(150),
-        db.ForeignKey(
-            "istituti.nome",
-            ondelete="SET NULL",
-            onupdate="CASCADE"
-        )
+        db.ForeignKey("istituti.nome", ondelete="SET NULL", onupdate="CASCADE")
     )
 
-    stato = db.Column(
-        db.String(30),
-        nullable=False,
-        default="CREATA"
-    )
+    stato = db.Column(db.String(30), nullable=False, default="CREATA")
 
     data_creazione = db.Column(
         db.DateTime,
@@ -114,11 +94,7 @@ class Pratica(db.Model):
 
     motivazione = db.Column(db.Text)
 
-    data_inizio = db.Column(
-        db.Date,
-        nullable=False
-    )
-
+    data_inizio = db.Column(db.Date, nullable=False)
     data_fine = db.Column(db.Date)
 
     __table_args__ = (
@@ -150,10 +126,7 @@ class Pratica(db.Model):
         back_populates="pratiche_docente"
     )
 
-    istituto = db.relationship(
-        "Istituto",
-        back_populates="pratiche"
-    )
+    istituto = db.relationship("Istituto", back_populates="pratiche")
 
     esami_pratica = db.relationship(
         "EsamePratica",
@@ -185,18 +158,11 @@ class Pratica(db.Model):
 class EsameEstero(db.Model):
     __tablename__ = "esami_esteri"
 
-    id = db.Column(db.String(20), primary_key=True)
-    nome = db.Column(db.String(150), nullable=False)
-    crediti = db.Column(
-        db.Integer,
-        nullable=False
-    )
+    nome = db.Column(db.String(250), primary_key=True)
+    crediti = db.Column(db.Integer, nullable=False)
 
     __table_args__ = (
-        db.CheckConstraint(
-            "crediti > 0",
-            name="chk_crediti_estero"
-        ),
+        db.CheckConstraint("crediti > 0", name="chk_crediti_estero"),
     )
 
     esami_locali = db.relationship(
@@ -204,8 +170,12 @@ class EsameEstero(db.Model):
         back_populates="esame_estero"
     )
 
-    def __init__(self, id, nome, crediti):
-        self.id = id
+    esami_pratica = db.relationship(
+        "EsamePratica",
+        back_populates="esame_estero"
+    )
+
+    def __init__(self, nome, crediti):
         self.nome = nome
         self.crediti = crediti
 
@@ -213,30 +183,17 @@ class EsameEstero(db.Model):
 class Esame(db.Model):
     __tablename__ = "esami"
 
-    nome = db.Column(
-        db.String(150),
-        primary_key=True
-    )
+    nome = db.Column(db.String(250), primary_key=True)
+    crediti = db.Column(db.Integer, nullable=False)
 
-    crediti = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    id_esame_estero = db.Column(
-        db.String(20),
-        db.ForeignKey(
-            "esami_esteri.id",
-            ondelete="SET NULL",
-            onupdate="CASCADE"
-        )
+    nome_esame_estero = db.Column(
+        db.String(250),
+        db.ForeignKey("esami_esteri.nome", ondelete="SET NULL", onupdate="CASCADE"),
+        nullable=True
     )
 
     __table_args__ = (
-        db.CheckConstraint(
-            "crediti > 0",
-            name="chk_crediti"
-        ),
+        db.CheckConstraint("crediti > 0", name="chk_crediti"),
     )
 
     esame_estero = db.relationship(
@@ -249,46 +206,32 @@ class Esame(db.Model):
         back_populates="esame_locale"
     )
 
-    def __init__(self, nome, crediti, id_esame_estero=None):
+    def __init__(self, nome, crediti, nome_esame_estero=None):
         self.nome = nome
         self.crediti = crediti
-        self.id_esame_estero = id_esame_estero
+        self.nome_esame_estero = nome_esame_estero
 
 
 class EsamePratica(db.Model):
     __tablename__ = "esami_pratica"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-        autoincrement=True
-    )
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     pratica_id = db.Column(
         db.Text,
-        db.ForeignKey(
-            "pratiche.id",
-            ondelete="CASCADE",
-            onupdate="CASCADE"
-        ),
+        db.ForeignKey("pratiche.id", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False
     )
 
     esame_locale_nome = db.Column(
-        db.String(150),
-        db.ForeignKey(
-            "esami.nome",
-            ondelete="RESTRICT"
-        ),
+        db.String(250),
+        db.ForeignKey("esami.nome", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False
     )
 
-    esame_estero_id = db.Column(
-        db.String(20),
-        db.ForeignKey(
-            "esami_esteri.id",
-            ondelete="RESTRICT"
-        ),
+    esame_estero_nome = db.Column(
+        db.String(250),
+        db.ForeignKey("esami_esteri.nome", ondelete="RESTRICT", onupdate="CASCADE"),
         nullable=False
     )
 
@@ -300,7 +243,7 @@ class EsamePratica(db.Model):
         ),
         db.UniqueConstraint(
             "pratica_id",
-            "esame_estero_id",
+            "esame_estero_nome",
             name="uq_pratica_esame_estero"
         ),
     )
@@ -316,15 +259,11 @@ class EsamePratica(db.Model):
     )
 
     esame_estero = db.relationship(
-        "EsameEstero"
+        "EsameEstero",
+        back_populates="esami_pratica"
     )
 
-    def __init__(
-            self,
-            pratica_id,
-            esame_locale_nome,
-            esame_estero_id
-    ):
+    def __init__(self, pratica_id, esame_locale_nome, esame_estero_nome):
         self.pratica_id = pratica_id
         self.esame_locale_nome = esame_locale_nome
-        self.esame_estero_id = esame_estero_id
+        self.esame_estero_nome = esame_estero_nome
