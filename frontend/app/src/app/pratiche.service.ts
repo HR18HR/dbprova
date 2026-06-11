@@ -29,7 +29,11 @@ export interface Istituti {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 export interface Pratica {
+=======
+export interface Pratiche {
+>>>>>>> Stashed changes
 =======
 export interface Pratiche {
 >>>>>>> Stashed changes
@@ -50,7 +54,10 @@ export interface Pratiche {
   data_inizio: string;   // DATE → string
   data_fine: string | null;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   esami:EsamiPratica[]
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 }
@@ -72,7 +79,11 @@ export interface EsamiPratica {
   pratica_id: string;
   esame_locale_nome: string;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   esame_estero_nome: string;
+=======
+  esame_estero_id: string;
+>>>>>>> Stashed changes
 =======
   esame_estero_id: string;
 >>>>>>> Stashed changes
@@ -156,6 +167,7 @@ CreaPratica(
 
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 GetPraticheUtente(
   token: string
 ): Observable<Pratica[]> {
@@ -171,6 +183,8 @@ GetPraticheUtente(
 }
 
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
