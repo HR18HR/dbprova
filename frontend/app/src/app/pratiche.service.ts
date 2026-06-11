@@ -28,7 +28,7 @@ export interface Istituti {
   paese: string;
 }
 
-export interface Pratiche {
+export interface Pratica {
   id: string; // TEXT, non number
   studente_email: string;
   docente_email: string | null;
@@ -45,6 +45,7 @@ export interface Pratiche {
   motivazione: string | null;
   data_inizio: string;   // DATE → string
   data_fine: string | null;
+  esami:EsamiPratica[]
 }
 
 export interface EsamiEsteri {
@@ -63,7 +64,7 @@ export interface EsamiPratica {
   id: number;
   pratica_id: string;
   esame_locale_nome: string;
-  esame_estero_id: string;
+  esame_estero_nome: string;
 }
 
 
@@ -141,6 +142,21 @@ CreaPratica(
 }
 
 
+
+
+GetPraticheUtente(
+  token: string
+): Observable<Pratica[]> {
+
+  return this.Http.get<Pratica[]>(
+    'http://localhost:5000/pratiche',
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+}
 
 
 
