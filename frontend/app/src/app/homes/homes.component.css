@@ -193,3 +193,189 @@ input:focus{
 
     border-left:4px solid #c62828;
 }
+/* BOTTONE CREA PRATICA A SINISTRA */
+
+.btn-crea-pratica{
+    position:fixed;
+
+    left:40px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    background:#8b1538;
+    color:white;
+
+    border:none;
+
+    padding:18px 30px;
+
+    border-radius:8px;
+
+    font-size:22px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+
+    z-index:1000;
+
+    display:block;
+}
+
+.btn-crea-pratica:hover{
+    background:#6f0f2c;
+}
+
+/* FORM PRATICA */
+
+.pratica-panel{
+    width:560px;
+}
+
+.section-title{
+    margin-top:25px;
+    margin-bottom:15px;
+    color:#8b1538;
+}
+
+.esame-row{
+    display:grid;
+    grid-template-columns:1fr 1fr 45px;
+    gap:10px;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.esame-row input{
+    width:100%;
+    box-sizing:border-box;
+}
+
+.trash-btn{
+    height:41px;
+
+    background:#c62828;
+    color:white;
+
+    border:none;
+    border-radius:4px;
+
+    cursor:pointer;
+    font-size:17px;
+}
+
+.trash-btn:hover{
+    background:#9f1f1f;
+}
+
+.add-btn{
+    width:100%;
+
+    margin-top:8px;
+    margin-bottom:20px;
+
+    background:white;
+    color:#8b1538;
+
+    border:2px dashed #8b1538;
+
+    padding:12px;
+
+    border-radius:4px;
+
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.add-btn:hover{
+    background:#f9f0f3;
+}
+
+input[readonly]{
+    background:#f5f5f5;
+    color:#555;
+    cursor:not-allowed;
+}
+
+input[type="file"]{
+    padding:10px;
+    border:1px dashed #8b1538;
+    background:#fafafa;
+    cursor:pointer;
+    box-sizing:border-box;
+}
+
+/* BOTTONE ESAMI A DESTRA */
+
+.floating-esami{
+    position:fixed;
+
+    right:30px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    background:#8b1538;
+    color:white;
+
+    border:none;
+
+    padding:15px 25px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+
+    z-index:100;
+}
+
+.floating-esami:hover{
+    background:#6f0f2c;
+}
+
+.esami-panel{
+    position:fixed;
+
+    right:110px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:400px;
+    max-height:70vh;
+
+    overflow-y:auto;
+
+    background:white;
+
+    padding:25px;
+
+    border-left:5px solid #8b1538;
+
+    box-shadow:0 0 20px rgba(0,0,0,0.15);
+
+    z-index:99;
+}
+
+.esame-card{
+    border:1px solid #ddd;
+
+    padding:15px;
+
+    margin-bottom:15px;
+
+    border-radius:6px;
+
+    background:#fafafa;
+}
+
+.esame-card h3{
+    margin-top:0;
+    color:#8b1538;
+}
