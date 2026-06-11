@@ -149,7 +149,7 @@ def crea_pratica():
             nome_istituto=nome_istituto if nome_istituto else None,
             data_inizio=data_inizio,
             data_fine=data_fine,
-            stato="CREATA"
+            stato="ATT_APPROVAZIONE"
         )
 
         db.session.add(nuova_pratica)
@@ -217,7 +217,7 @@ def get_pratiche_utente():
         }), 401
 
     pratiche = Pratica.query.filter_by(
-        id=id
+        studente_email=id
     ).all()
 
     return jsonify([

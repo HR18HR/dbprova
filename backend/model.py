@@ -84,7 +84,7 @@ class Pratica(db.Model):
         db.ForeignKey("istituti.nome", ondelete="SET NULL", onupdate="CASCADE")
     )
 
-    stato = db.Column(db.String(30), nullable=False, default="CREATA")
+    stato = db.Column(db.String(30), nullable=False, default="ATT_APPROVAZIONE")
 
     data_creazione = db.Column(
         db.DateTime,
