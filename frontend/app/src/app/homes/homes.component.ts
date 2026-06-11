@@ -89,6 +89,7 @@ constructor( public user:UserService,public pratiche:PraticheService) {}
       next: (response) => {
 
         this.pratiche_1 = response;
+        console.log(this.pratiche_1[0])
 
 
       },
