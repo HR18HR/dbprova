@@ -100,12 +100,12 @@
       (click)="praticaSelezionata = null; modificaPraticaAttiva = false">
       ×
     </button>
-    <button
-    class="delete-btn"
-    *ngIf="praticaSelezionata"
-    (click)="eliminaPratica(praticaSelezionata.id)">
-    🗑 Elimina pratica
-  </button>
+   <button
+  class="delete-btn"
+  *ngIf="praticaSelezionata && puoEliminarePratica(praticaSelezionata)"
+  (click)="eliminaPratica(praticaSelezionata.id)">
+  🗑 Elimina pratica
+</button>
 
     <h2>Dettaglio pratica</h2>
 
