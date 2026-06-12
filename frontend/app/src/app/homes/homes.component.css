@@ -609,3 +609,23 @@ select:disabled{
     color:#555;
     cursor:not-allowed;
 }
+
+
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 15px;
+
+  display: block;
+  margin-left: auto;
+}
+
+.delete-btn:hover {
+  background: #bb2d3b;
+}
