@@ -156,6 +156,17 @@ GetPraticheUtente(
       }
     }
   );
+
+
+
+
+
+
+  eliminaPratica(id: number): Observable<void> {
+  return this.http.delete<void>(
+    `http://localhost:5000/eliminapratiche/${id}`
+  );
+}
 }
 
 
