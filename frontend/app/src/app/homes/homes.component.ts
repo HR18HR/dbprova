@@ -374,6 +374,11 @@ export class HomesComponent implements OnInit {
 }
 
 
+puoEliminarePratica(pratica: any): boolean {
+  return pratica.stato !== 'MOBILITA_IN_CORSO'
+      && pratica.stato !== 'APPROVATO_TRANSCRIPT'
+      && pratica.stato !== 'CHIUSA';
+}
     
 
     /*
