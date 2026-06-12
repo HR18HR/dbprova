@@ -234,3 +234,47 @@ def get_pratiche_utente():
         }
         for pratica in pratiche
     ]), 200
+
+
+
+
+@pratiche_bp.route("/eliminapratiche/<id_pratica>", methods=["DELETE"])
+def elimina_pratica(id_pratica):
+
+    email = _get_email_from_token()
+
+    if email is None:
+        return jsonify({
+            "errore": "Non autenticato"
+        }), 401
+
+    pratica = Pratica.query.filter_by(
+        id=id_pratica
+    ).first()
+
+    if pratica is None:
+        return jsonify({
+            "errore": "Pratica non trovata"
+        }), 404
+
+    if pratica.studente_email != email:
+        return jsonify({
+            "errore": "Non autorizzato"
+        }), 403
+
+    try:
+
+        db.session.delete(pratica)
+        db.session.commit()
+
+        return jsonify({
+            "messaggio": "Pratica eliminata con successo"
+        }), 200
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        return jsonify({
+            "errore": str(e)
+        }), 400
