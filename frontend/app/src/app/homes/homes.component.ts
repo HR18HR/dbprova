@@ -343,6 +343,39 @@ export class HomesComponent implements OnInit {
       esami: this.esamiPraticaModifica
     });
 
+
+  eliminaPratica(id: number) {
+
+  const conferma = confirm(
+    'Sei sicuro di voler eliminare questa pratica?'
+  );
+
+  if (!conferma) {
+    return;
+  }
+
+  this.praticaService.eliminaPratica(id).subscribe({
+    next: () => {
+
+      this.pratiche_1 = this.pratiche_1.filter(
+        p => p.id !== id
+      );
+
+      this.praticaSelezionata = null;
+      this.modificaPraticaAttiva = false;
+
+      alert('Pratica eliminata con successo');
+    },
+    error: err => {
+      console.error(err);
+      alert('Errore durante l\'eliminazione');
+    }
+  });
+}
+
+
+    
+
     /*
     Qui poi devi creare/chiamare il metodo nel service:
 
