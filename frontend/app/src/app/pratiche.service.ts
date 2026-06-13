@@ -172,5 +172,100 @@ eliminaPratica(id: string,token:string): Observable<{ message: string }> {
     }
   );
 }
+
+
+
+ModificaPratica(
+  token: string,
+  id_pratica: string,
+  email_docente: string,
+  nome_istituto: string,
+  data_partenza: string,
+  data_rientro: string | null,
+  semestre: string,
+  esami: EsamiPratica[]
+): Observable<{message:string, pratica:Pratica}> {
+
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.Http.put<{message:string, pratica:Pratica}>(
+    `http://localhost:5000/modifica_pratica/${id_pratica}`,
+    {
+      email_docente,
+      nome_istituto,
+      data_partenza,
+      data_rientro,
+      semestre,
+      esami
+    },
+    { headers }
+  );
+}
+
+
+
+getPraticheDocente(token: string): Observable<Pratica[]> {
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.Http.get<Pratica[]>(
+    'http://localhost:5000/pratiche_docente',
+    { headers }
+  );
+}
+
+
+accettaPraticaDocente(
+  token: string,
+  id_pratica: string
+): Observable<{message:string, pratica:Pratica}> {
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.Http.put<{message:string, pratica:Pratica}>(
+    `http://localhost:5000/pratiche_docente/${id_pratica}/accetta`,
+    {},
+    { headers }
+  );
+}
+
+
+
+rifiutaPraticaDocente(
+  token: string,
+  id_pratica: string,
+  motivazione: string
+): Observable<{message:string, pratica:Pratica}> {
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.Http.put<{message:string, pratica:Pratica}>(
+    `http://localhost:5000/pratiche_docente/${id_pratica}/rifiuta`,
+    { motivazione },
+    { headers }
+  );
+}
+
+
+
+scaricaLearningAgreement(token: string, id_pratica: string): Observable<Blob> {
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.Http.get(
+    `http://localhost:5000/pratiche_docente/${id_pratica}/learning_agreement`,
+    {
+      headers,
+      responseType: 'blob'
+    }
+  );
+}
+
 }
 

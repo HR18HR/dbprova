@@ -36,8 +36,12 @@ export class LoginComponent {
       next: data => {
         // Parsing brutale della risposta per ottenere il messaggio e il token (da sistemare meglio!)
         this.benvenuto = data.message = 'Benvenuto';
-        localStorage.setItem("jwt", data.token); // 
          this.ruolo=<Token>jwtDecode(data.token);
+          if (this.ruolo.ruolo == "S") {
+        localStorage.setItem("jwt", data.token);
+      } else {
+        localStorage.setItem("jwt_1", data.token);
+      }
         // Se il token è stato salvato correttamente
         if (localStorage.getItem("jwt") != null) {
           setTimeout(()=>{

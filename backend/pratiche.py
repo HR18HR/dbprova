@@ -3,7 +3,7 @@ import datetime
 import jwt
 import bcrypt
 from flask import Blueprint, request, jsonify, current_app
-
+from flask import send_file
 from model import db, Utente, Istituto, Pratica,Esame,EsameEstero,EsamePratica
 import os
 import json
@@ -181,6 +181,7 @@ def crea_pratica():
             db.session.add(nuovo_esame)
 
         if file:
+
             cartella_studente = os.path.join(
                 "uploads",
                 secure_filename(email_studente.replace("@", "_"))
@@ -188,11 +189,14 @@ def crea_pratica():
 
             os.makedirs(cartella_studente, exist_ok=True)
 
-            nome_file = secure_filename(file.filename)
-
-            percorso_file = os.path.join(cartella_studente, nome_file)
+            percorso_file = os.path.join(
+                cartella_studente,
+                "agreement.pdf"
+            )
 
             file.save(percorso_file)
+
+
 
         db.session.commit()
 
@@ -282,3 +286,286 @@ def elimina_pratica(id_pratica):
         return jsonify({
             "errore": str(e)
         }), 400
+
+
+
+
+@pratiche_bp.route("/modifica_pratica/<id_pratica>", methods=["PUT"])
+def modifica_pratica(id_pratica):
+    try:
+        email_utente = _get_email_from_token()
+        data = request.get_json()
+
+        pratica = Pratica.query.filter_by(id=id_pratica).first()
+
+        if not pratica:
+            return jsonify({"errore": "Pratica non trovata"}), 404
+
+        if pratica.studente_email != email_utente:
+            return jsonify({"errore": "Non puoi modificare questa pratica"}), 403
+
+        if pratica.stato not in ["ATTESA", "ATT_APPROVAZIONE", "MOBILITA"]:
+            return jsonify({"errore": "Questa pratica non può essere modificata"}), 400
+
+        if pratica.stato in ["ATTESA", "ATT_APPROVAZIONE"]:
+            pratica.docente_email = data.get("email_docente")
+            pratica.nome_istituto = data.get("nome_istituto")
+            pratica.data_inizio = data.get("data_partenza")
+            pratica.data_fine = data.get("data_rientro")
+            pratica.semestre = data.get("semestre")
+
+        if pratica.stato == "MOBILITA":
+            pratica.data_fine = data.get("data_rientro")
+
+        EsamePratica.query.filter_by(pratica_id=id_pratica).delete()
+
+        for e in data.get("esami", []):
+            nuovo = EsamePratica(
+                pratica_id=id_pratica,
+                esame_locale_nome=e.get("esame_locale_nome"),
+                esame_estero_id=e.get("esame_estero_id")
+            )
+            db.session.add(nuovo)
+
+        db.session.commit()
+
+        esami_pratica = EsamePratica.query.filter_by(pratica_id=id_pratica).all()
+
+        return jsonify({
+            "message": "Pratica modificata correttamente",
+            "pratica": {
+                "id": pratica.id,
+                "studente_email": pratica.studente_email,
+                "docente_email": pratica.docente_email,
+                "nome_istituto": pratica.nome_istituto,
+                "stato": pratica.stato,
+                "data_inizio": str(pratica.data_inizio),
+                "data_fine": str(pratica.data_fine) if pratica.data_fine else None,
+                "semestre": pratica.semestre,
+                "motivazione": pratica.motivazione,
+                "esami": [
+                    {
+                        "esame_locale_nome": e.esame_locale_nome,
+                        "esame_estero_id": e.esame_estero_id
+                    }
+                    for e in esami_pratica
+                ]
+            }
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"errore": str(e)}), 500
+
+
+
+@pratiche_bp.route("/pratiche_docente", methods=["GET"])
+def pratiche_docente():
+    try:
+        email_docente = _get_email_from_token()
+
+        pratiche = Pratica.query.filter_by(
+            docente_email=email_docente
+        ).all()
+
+        risultato = []
+
+        for p in pratiche:
+
+            esami = EsamePratica.query.filter_by(
+                pratica_id=p.id
+            ).all()
+
+            risultato.append({
+                "id": p.id,
+                "studente_email": p.studente_email,
+                "docente_email": p.docente_email,
+                "nome_istituto": p.nome_istituto,
+                "stato": p.stato,
+                "data_inizio": p.data_inizio,
+                "data_fine": p.data_fine,
+                "semestre": p.semestre,
+                "motivazione": p.motivazione,
+                "esami": [
+                    {
+                        "esame_locale_nome": e.esame_locale_nome,
+                        "esame_estero_nome": e.esame_estero_nome
+                    }
+                    for e in esami
+                ]
+            })
+
+        return jsonify(risultato), 200
+
+    except Exception as e:
+        return jsonify({"errore": str(e)}), 500
+
+
+@pratiche_bp.route("/pratiche_docente/<id_pratica>/accetta", methods=["PUT"])
+def accetta_pratica_docente(id_pratica):
+    try:
+        email_docente = _get_email_from_token()
+
+        pratica = Pratica.query.filter_by(id=id_pratica).first()
+
+        if not pratica:
+            return jsonify({"errore": "Pratica non trovata"}), 404
+
+        if pratica.docente_email != email_docente:
+            return jsonify({"errore": "Non autorizzato"}), 403
+
+        if pratica.stato != "ATT_APPROVAZIONE":
+            return jsonify({
+                "errore": "La pratica non è in attesa approvazione"
+            }), 400
+
+        pratica.stato = "APPROVATA_DOCENTE"
+        pratica.motivazione = None
+
+        db.session.commit()
+
+        esami = EsamePratica.query.filter_by(
+            pratica_id=pratica.id
+        ).all()
+
+        pratica_json = {
+            "id": pratica.id,
+            "studente_email": pratica.studente_email,
+            "docente_email": pratica.docente_email,
+            "nome_istituto": pratica.nome_istituto,
+            "stato": pratica.stato,
+            "data_inizio": str(pratica.data_inizio),
+            "data_fine": str(pratica.data_fine) if pratica.data_fine else None,
+            "semestre": pratica.semestre,
+            "motivazione": pratica.motivazione,
+            "esami": [
+                {
+                    "esame_locale_nome": e.esame_locale_nome,
+                    "esame_estero_nome": e.esame_estero_nome
+                }
+                for e in esami
+            ]
+        }
+
+        return jsonify({
+            "message": "Pratica approvata correttamente",
+            "pratica": pratica_json
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"errore": str(e)}), 500
+
+
+@pratiche_bp.route(
+    "/pratiche_docente/<id_pratica>/learning_agreement",
+    methods=["GET"]
+)
+def mostra_learning_agreement(id_pratica):
+
+    try:
+
+        email_docente = _get_email_from_token()
+
+        pratica = Pratica.query.filter_by(
+            id=id_pratica
+        ).first()
+
+        if not pratica:
+            return jsonify({
+                "errore": "Pratica non trovata"
+            }), 404
+
+        if pratica.docente_email != email_docente:
+            return jsonify({
+                "errore": "Non autorizzato"
+            }), 403
+
+        percorso = os.path.join(
+            "uploads",
+            secure_filename(pratica.studente_email.replace("@", "_")),
+            "agreement.pdf"
+        )
+
+
+
+        if not os.path.exists(percorso):
+            return jsonify({
+                "errore": "File non trovato"
+            }), 404
+
+        return send_file(
+            percorso,
+            mimetype="application/pdf",
+            as_attachment=False
+        )
+
+    except Exception as e:
+        return jsonify({"errore": str(e)}), 500
+
+
+@pratiche_bp.route("/pratiche_docente/<id_pratica>/rifiuta", methods=["PUT"])
+def rifiuta_pratica_docente(id_pratica):
+    try:
+        email_docente = _get_email_from_token()
+        data = request.get_json()
+
+        if not data:
+            return jsonify({"errore": "Dati mancanti"}), 400
+
+        motivazione = data.get("motivazione", "")
+
+        if not motivazione or motivazione.strip() == "":
+            return jsonify({
+                "errore": "La motivazione è obbligatoria"
+            }), 400
+
+        pratica = Pratica.query.filter_by(id=id_pratica).first()
+
+        if not pratica:
+            return jsonify({"errore": "Pratica non trovata"}), 404
+
+        if pratica.docente_email != email_docente:
+            return jsonify({"errore": "Non autorizzato"}), 403
+
+        if pratica.stato != "ATT_APPROVAZIONE":
+            return jsonify({
+                "errore": "La pratica non è in attesa approvazione"
+            }), 400
+
+        pratica.stato = "CREATA"
+        pratica.motivazione = motivazione.strip()
+
+        db.session.commit()
+
+        esami = EsamePratica.query.filter_by(
+            pratica_id=pratica.id
+        ).all()
+
+        pratica_json = {
+            "id": pratica.id,
+            "studente_email": pratica.studente_email,
+            "docente_email": pratica.docente_email,
+            "nome_istituto": pratica.nome_istituto,
+            "stato": pratica.stato,
+            "data_inizio": str(pratica.data_inizio),
+            "data_fine": str(pratica.data_fine) if pratica.data_fine else None,
+            "semestre": pratica.semestre,
+            "motivazione": pratica.motivazione,
+            "esami": [
+                {
+                    "esame_locale_nome": e.esame_locale_nome,
+                    "esame_estero_nome": e.esame_estero_nome
+                }
+                for e in esami
+            ]
+        }
+
+        return jsonify({
+            "message": "Pratica rifiutata",
+            "pratica": pratica_json
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"errore": str(e)}), 500

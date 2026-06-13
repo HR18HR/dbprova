@@ -7,6 +7,7 @@
 
       <div>
         <h1>Overseas</h1>
+        <h1>Area Studente</h1>
         <p>Portale Mobilità Internazionale</p>
       </div>
     </div>
@@ -298,10 +299,14 @@
       [readonly]="!modificaPraticaAttiva || !puoModificareDataRientro(praticaSelezionata)">
 
       <label>Semestre</label>
-    <input
-      type="text"
-      [ngModel]="praticaSelezionata.semestre"
-      readonly>
+    <select
+      [(ngModel)]="praticaSelezionata.semestre"
+      [disabled]="!modificaPraticaAttiva || !puoModificareCampoNormale(praticaSelezionata)">
+      <option value="">Seleziona semestre</option>
+      <option value="PRIMO">Primo semestre</option>
+      <option value="SECONDO">Secondo semestre</option>
+      <option value="ANNO">Anno intero</option>
+    </select>
       
     <label>Motivazione</label>
     <textarea [(ngModel)]="motivazioneModifica" readonly></textarea>

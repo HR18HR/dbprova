@@ -79,7 +79,7 @@ export class HomesComponent implements OnInit {
 
       this.caricaIstituti(token);
       this.caricaEsami(token);
-      this.caricaPraticheUtente(token);
+      setInterval(()=>this.caricaPraticheUtente(token),2000);
     }
   }
 
@@ -336,8 +336,7 @@ export class HomesComponent implements OnInit {
       return;
     }
 
-    /*
-    Qui poi devi creare/chiamare il metodo nel service:
+    
 
     this.pratiche.ModificaPratica(
       token,
@@ -346,23 +345,33 @@ export class HomesComponent implements OnInit {
       this.nomeIstituto,
       this.dataPartenza,
       this.dataRientroModifica,
+      this.semestre,
       this.esamiPraticaModifica
     ).subscribe({
       next: (r) => {
-        this.message = r.message;
-        this.res.Pos = 1;
-        this.res.Neg = 0;
-        this.modificaPraticaAttiva = false;
-        this.praticaSelezionata = null;
-        this.caricaPraticheUtente(token);
-      },
+
+  this.message = r.message;
+
+  const pos = this.pratiche_1.findIndex(
+    p => p.id === r.pratica.id
+  );
+
+  if(pos !== -1){
+    this.pratiche_1[pos] = r.pratica;
+  }
+
+  this.res.Pos = 1;
+  this.res.Neg = 0;
+  this.modificaPraticaAttiva = false;
+  this.praticaSelezionata = null;
+},
       error: (err) => {
         this.message = err.error?.errore ?? 'Errore modifica pratica';
         this.res.Pos = 0;
         this.res.Neg = 1;
       }
     });
-    */
+    
   }
 
 

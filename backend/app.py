@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.register_blueprint(utenti_bp)
 app.register_blueprint(pratiche_bp)
-CORS(app, origins=["http://localhost:4200"])
+CORS(app, origins=["http://localhost:4200"],supports_credentials=True)
 db.init_app(app)
  # prova
 with app.app_context():
@@ -86,17 +86,23 @@ with app.app_context():
 
 
 
+    salt_1 = bcrypt.gensalt().decode()
 
     docente = Utente(
         nome="Mario",
         cognome="Rossi",
         email="mario.rossi@unive.it",
-        password_hash="hash",
-        salt="salt",
+        password_hash=bcrypt.hashpw(
+            "123".encode(),
+            salt_1.encode()
+        ).decode(),
+        salt=salt_1,
         ruolo="D",
-        data_nascita=date(1980, 5, 10)
-    )
-
+        data_nascita=datetime.strptime(
+            "12/12/2000",
+            "%d/%m/%Y"
+        )
+)
     db.session.add(docente)
     db.session.commit()
 

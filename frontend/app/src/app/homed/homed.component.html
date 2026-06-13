@@ -1,1 +1,207 @@
-<p>homed works!</p>
+<div class="page">
+
+  <header class="header">
+
+    <div class="logo-area">
+      <img src="cafoscari.png" alt="Ca Foscari">
+
+      <div>
+        <h1>Area Docente</h1>
+        <p>Gestione pratiche Erasmus</p>
+      </div>
+    </div>
+
+  </header>
+
+  <div class="message positivo" *ngIf="res.Pos === 1">
+    {{ message }}
+  </div>
+
+  <div class="message negativo" *ngIf="res.Neg === 1">
+    {{ message }}
+  </div>
+
+  <div class="content">
+
+    <h2>Pratiche assegnate</h2>
+
+    <div class="pratiche-lista">
+
+      <div
+        class="pratica-card"
+        *ngFor="let p of praticheDocente">
+
+        <div class="pratica-card-info">
+
+          <h3>Pratica {{ p.id }}</h3>
+
+          <p>
+            <strong>Studente:</strong>
+            {{ p.studente_email }}
+          </p>
+
+          <p>
+            <strong>Istituto:</strong>
+            {{ p.nome_istituto }}
+          </p>
+
+          <p>
+            <strong>Stato:</strong>
+            {{ p.stato }}
+          </p>
+
+        </div>
+
+        <button
+          class="btn-primary"
+          (click)="mostraDettaglioPratica(p)">
+
+          Dettagli pratica
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- OVERLAY DETTAGLIO -->
+
+<div
+  class="overlay"
+  *ngIf="praticaSelezionata">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <h2>Dettaglio pratica</h2>
+
+      <button
+        class="btn-close"
+        (click)="chiudiDettaglio()">
+
+        ×
+
+      </button>
+
+    </div>
+
+    <div class="pratica-info">
+
+      <label>ID Pratica</label>
+      <input
+        type="text"
+        [ngModel]="praticaSelezionata.id"
+        readonly>
+
+      <label>Email Studente</label>
+      <input
+        type="email"
+        [ngModel]="praticaSelezionata.studente_email"
+        readonly>
+
+      <label>Email Docente</label>
+      <input
+        type="email"
+        [ngModel]="praticaSelezionata.docente_email"
+        readonly>
+
+      <label>Istituto</label>
+      <input
+        type="text"
+        [ngModel]="praticaSelezionata.nome_istituto"
+        readonly>
+
+      <label>Data Partenza</label>
+      <input
+        type="date"
+        [ngModel]="praticaSelezionata.data_inizio"
+        readonly>
+
+      <label>Data Rientro</label>
+      <input
+        type="date"
+        [ngModel]="praticaSelezionata.data_fine"
+        readonly>
+
+      <label>Semestre</label>
+      <input
+        type="text"
+        [ngModel]="praticaSelezionata.semestre"
+        readonly>
+
+      <label>Stato</label>
+      <input
+        type="text"
+        [ngModel]="praticaSelezionata.stato"
+        readonly>
+
+      <label>Motivazione</label>
+
+      <textarea
+        [(ngModel)]="motivazioneRifiuto"
+        [readonly]="motivazioneReadOnly()"
+        placeholder="Inserisci una motivazione in caso di rifiuto">
+      </textarea>
+
+    </div>
+
+    <div class="esami-box">
+
+      <h3>Esami associati</h3>
+
+      <div
+        class="esame-row"
+        *ngFor="let e of praticaSelezionata.esami">
+
+        <input
+          type="text"
+          [ngModel]="e.esame_locale_nome"
+          readonly>
+
+        <input
+          type="text"
+          [ngModel]="e.esame_estero_nome"
+          readonly>
+
+      </div>
+
+    </div>
+
+    <div class="azioni">
+
+      <button
+        class="btn-secondary"
+        (click)="mostraLearningAgreement()">
+
+        Mostra Learning Agreement
+
+      </button>
+
+      <button
+        class="btn-success"
+        *ngIf="puoDecidereDocente()"
+        (click)="accettaPratica()">
+
+        Accetta
+
+      </button>
+
+      <button
+        class="btn-danger"
+        *ngIf="puoDecidereDocente()"
+        (click)="rifiutaPratica()">
+
+        Rifiuta
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
