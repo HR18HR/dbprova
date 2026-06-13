@@ -107,6 +107,7 @@ def crea_pratica():
 
     data_partenza = request.form.get("data_partenza")
     data_rientro = request.form.get("data_rientro")
+    semestre = request.form.get("semestre")
 
     esami_json = request.form.get("esami")
     file = request.files.get("agreement")
@@ -119,6 +120,12 @@ def crea_pratica():
 
     if not data_partenza:
         return jsonify({"errore": "Data partenza mancante"}), 400
+
+    if not semestre:
+        return jsonify({"errore": "Semestre mancante"}), 400
+
+    if semestre not in ["PRIMO", "SECONDO", "ANNO"]:
+        return jsonify({"errore": "Semestre non valido"}), 400
 
     try:
         data_inizio = datetime.strptime(data_partenza, "%Y-%m-%d").date()
@@ -145,9 +152,10 @@ def crea_pratica():
         nuova_pratica = Pratica(
             id=id_pratica,
             studente_email=email_studente,
+            data_inizio=data_inizio,
+            semestre=semestre,
             docente_email=email_docente if email_docente else None,
             nome_istituto=nome_istituto if nome_istituto else None,
-            data_inizio=data_inizio,
             data_fine=data_fine,
             stato="ATT_APPROVAZIONE"
         )
@@ -156,7 +164,7 @@ def crea_pratica():
 
         for e in esami:
             esame_locale_nome = e.get("esame_locale_nome")
-            esame_estero_nome = e.get("esame_estero_nome")
+            esame_estero_nome = e.get("esame_estero_nome") or e.get("esame_estero_id")
 
             if not esame_locale_nome or not esame_estero_nome:
                 db.session.rollback()
@@ -182,10 +190,7 @@ def crea_pratica():
 
             nome_file = secure_filename(file.filename)
 
-            percorso_file = os.path.join(
-                cartella_studente,
-                nome_file
-            )
+            percorso_file = os.path.join(cartella_studente, nome_file)
 
             file.save(percorso_file)
 
@@ -204,20 +209,18 @@ def crea_pratica():
         }), 500
 
 
-
-
 @pratiche_bp.route("/pratiche", methods=["GET"])
 def get_pratiche_utente():
 
-    id = _get_email_from_token()
+    email = _get_email_from_token()
 
-    if id is None:
+    if email is None:
         return jsonify({
             "errore": "Non autenticato"
         }), 401
 
     pratiche = Pratica.query.filter_by(
-        studente_email=id
+        studente_email=email
     ).all()
 
     return jsonify([
@@ -230,6 +233,7 @@ def get_pratiche_utente():
             "data_inizio": pratica.data_inizio.isoformat(),
             "data_fine": pratica.data_fine.isoformat() if pratica.data_fine else None,
             "data_creazione": pratica.data_creazione.isoformat(),
+            "semestre":pratica.semestre,
             "motivazione": pratica.motivazione
         }
         for pratica in pratiche

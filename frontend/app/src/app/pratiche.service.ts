@@ -41,7 +41,8 @@ export interface Pratica {
     | 'MOBILITA_IN_CORSO'
     | 'APPROVATO_TRANSCRIPT'
     | 'CHIUSA';
-  data_creazione: string; // TIMESTAMP → string
+  data_creazione: string;
+  semestre:'PRIMO' | 'SECONDO' | 'ANNO' // TIMESTAMP → string
   motivazione: string | null;
   data_inizio: string;   // DATE → string
   data_fine: string | null;
@@ -156,20 +157,20 @@ GetPraticheUtente(
       }
     }
   );
+}
 
 
+eliminaPratica(id: string,token:string): Observable<{ message: string }> {
 
 
-
-
-  eliminaPratica(id: number): Observable<void> {
-  return this.http.delete<void>(
-    `http://localhost:5000/eliminapratiche/${id}`
+  return this.Http.delete<{ message: string }>(
+    `http://localhost:5000/eliminapratiche/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
   );
 }
 }
 
-
-
-
-}

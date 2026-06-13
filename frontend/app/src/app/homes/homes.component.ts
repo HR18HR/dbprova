@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Token, UserService } from '../user.service';
 import { jwtDecode } from 'jwt-decode';
 import { Esami, EsamiPratica, Istituti, PraticheService, Pratica } from '../pratiche.service';
+import { error } from 'node:console';
 
 @Component({
   selector: 'app-home',
@@ -62,6 +63,7 @@ export class HomesComponent implements OnInit {
   motivazioneModifica: string = '';
   dataRientroModifica: string = '';
   esamiPraticaModifica: EsamiPratica[] = [];
+  eliminata:boolean=false;
 
   constructor(
     public user: UserService,
@@ -103,7 +105,6 @@ export class HomesComponent implements OnInit {
     this.pratiche.GetPraticheUtente(token).subscribe({
       next: (response) => {
         this.pratiche_1 = response;
-        console.log(this.pratiche_1);
       },
       error: () => {}
     });
@@ -259,6 +260,7 @@ export class HomesComponent implements OnInit {
   }
 
   selezionaPratica(p: Pratica) {
+    this.semestre = (p as any).semestre ?? '';
     this.praticaSelezionata = p;
     this.modificaPraticaAttiva = false;
 
@@ -334,53 +336,6 @@ export class HomesComponent implements OnInit {
       return;
     }
 
-    console.log({
-      id: this.praticaSelezionata.id,
-      emailDocente: this.emailDocente,
-      nomeIstituto: this.nomeIstituto,
-      dataPartenza: this.dataPartenza,
-      dataRientro: this.dataRientroModifica,
-      esami: this.esamiPraticaModifica
-    });
-
-
-  eliminaPratica(id: number) {
-
-  const conferma = confirm(
-    'Sei sicuro di voler eliminare questa pratica?'
-  );
-
-  if (!conferma) {
-    return;
-  }
-
-  this.praticaService.eliminaPratica(id).subscribe({
-    next: () => {
-
-      this.pratiche_1 = this.pratiche_1.filter(
-        p => p.id !== id
-      );
-
-      this.praticaSelezionata = null;
-      this.modificaPraticaAttiva = false;
-
-      alert('Pratica eliminata con successo');
-    },
-    error: err => {
-      console.error(err);
-      alert('Errore durante l\'eliminazione');
-    }
-  });
-}
-
-
-puoEliminarePratica(pratica: any): boolean {
-  return pratica.stato !== 'MOBILITA_IN_CORSO'
-      && pratica.stato !== 'APPROVATO_TRANSCRIPT'
-      && pratica.stato !== 'CHIUSA';
-}
-    
-
     /*
     Qui poi devi creare/chiamare il metodo nel service:
 
@@ -409,5 +364,40 @@ puoEliminarePratica(pratica: any): boolean {
     });
     */
   }
+
+
+  eliminaPratica(id:string){
+    let token =localStorage.getItem("jwt")
+    this.eliminata=true
+    if(token!=undefined){
+    this.pratiche.eliminaPratica(id,token).subscribe({
+      next:(r)=>{
+        this.message = r.message;
+        this.res.Pos = 1;
+        this.res.Neg = 0;
+        this.pratiche_1=this.pratiche_1.filter((
+          p => p.id !== id
+        ))
+      this.praticaSelezionata = null;
+      this.modificaPraticaAttiva = false;
+
+      },
+
+      error:(err)=>{
+        this.message = err.error?.errore ?? 'Errore creazione pratica';
+        this.res.Pos = 0;
+        this.res.Neg = 1;
+
+      }
+
+
+    })
+  }
+}
+
+
+  puoEliminarePratica(pratica: Pratica): boolean {
+  return pratica.stato === 'CREATA' || pratica.stato === 'ATT_APPROVAZIONE';
+}
 
 }

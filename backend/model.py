@@ -96,6 +96,7 @@ class Pratica(db.Model):
 
     data_inizio = db.Column(db.Date, nullable=False)
     data_fine = db.Column(db.Date)
+    semestre =db.Column(db.String(250),nullable=False)
 
     __table_args__ = (
         db.CheckConstraint(
@@ -112,6 +113,13 @@ class Pratica(db.Model):
             """,
             name="chk_stato"
         ),
+        db.CheckConstraint(
+            """
+            semestre IN(
+            'PRIMO','SECONDO','ANNO'
+        )
+        """
+    )
     )
 
     studente = db.relationship(
@@ -139,6 +147,7 @@ class Pratica(db.Model):
             id,
             studente_email,
             data_inizio,
+            semestre,
             docente_email=None,
             nome_istituto=None,
             stato="CREATA",
@@ -150,6 +159,7 @@ class Pratica(db.Model):
         self.docente_email = docente_email
         self.nome_istituto = nome_istituto
         self.stato = stato
+        self.semestre =semestre
         self.data_inizio = data_inizio
         self.data_fine = data_fine
         self.motivazione = motivazione
