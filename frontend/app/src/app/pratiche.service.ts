@@ -18,7 +18,7 @@ export interface Utenti {
   password_hash: string;
   salt: string;
   ruolo: 'S' | 'D' | 'U';
-  data_nascita: string; // DATE → string (ISO format)
+  data_nascita: string; 
 }
 
 export interface Istituti {
@@ -262,6 +262,56 @@ scaricaLearningAgreement(token: string, id_pratica: string): Observable<Blob> {
     `http://localhost:5000/pratiche_docente/${id_pratica}/learning_agreement`,
     {
       headers,
+      responseType: 'blob'
+    }
+  );
+}
+
+
+
+
+getPraticheUfficio(token: string) {
+  return this.Http.get<Pratica[]>(
+    "http://localhost:5000/pratiche_ufficio",
+    {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      })
+    }
+  );
+}
+
+accettaPraticaUfficio(id: string, token: string) {
+  return this.Http.put<any>(
+    `http://localhost:5000/pratiche_ufficio/${id}/accetta`,
+    {},
+    {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      })
+    }
+  );
+}
+
+rifiutaPraticaUfficio(id: string, token: string) {
+  return this.Http.put<any>(
+    `http://localhost:5000/pratiche_ufficio/${id}/rifiuta`,
+    {},
+    {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      })
+    }
+  );
+}
+
+scaricaAgreementUfficio(id: string, token: string) {
+  return this.Http.get(
+    `http://localhost:5000/pratiche_ufficio/${id}/learning_agreement`,
+    {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      }),
       responseType: 'blob'
     }
   );

@@ -1,0 +1,210 @@
+<div class="page">
+
+  <header class="header">
+    <div class="logo-area">
+      <img src="cafoscari.png" alt="Logo Ca Foscari">
+
+      <div>
+        <h1>Area Ufficio</h1>
+        <p>Gestione pratiche Erasmus</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <h2>Pratiche Erasmus</h2>
+
+    <p class="success" *ngIf="messaggio">
+      {{ messaggio }}
+    </p>
+
+    <p class="error" *ngIf="errore">
+      {{ errore }}
+    </p>
+
+    <div class="cards">
+
+      <div
+        class="card"
+        *ngFor="let p of pratiche"
+      >
+
+        <h3>Pratica {{ p.id }}</h3>
+
+        <p>
+          <strong>Studente:</strong>
+          {{ p.studente_email }}
+        </p>
+
+        <p>
+          <strong>Docente:</strong>
+          {{ p.docente_email }}
+        </p>
+
+        <p>
+          <strong>Istituto:</strong>
+          {{ p.nome_istituto }}
+        </p>
+
+        <p>
+          <strong>Stato:</strong>
+          {{ p.stato }}
+        </p>
+
+        <p>
+          <strong>Partenza:</strong>
+          {{ p.data_inizio }}
+        </p>
+
+        <p>
+          <strong>Rientro:</strong>
+          {{ p.data_fine }}
+        </p>
+
+        <button (click)="apriPratica(p)">
+          Dettagli pratica
+        </button>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <div
+    class="overlay"
+    *ngIf="praticaSelezionata"
+  >
+
+    <div class="modal">
+
+      <button
+        class="close"
+        (click)="chiudiPratica()"
+      >
+        ×
+      </button>
+
+      <h2>Dettaglio pratica</h2>
+
+      <div class="pratica-info">
+
+        <label>ID Pratica</label>
+        <input
+          type="text"
+          [ngModel]="praticaSelezionata.id"
+          readonly
+        >
+
+        <label>Email Studente</label>
+        <input
+          type="email"
+          [ngModel]="praticaSelezionata.studente_email"
+          readonly
+        >
+
+        <label>Email Docente</label>
+        <input
+          type="email"
+          [ngModel]="praticaSelezionata.docente_email"
+          readonly
+        >
+
+        <label>Istituto</label>
+        <input
+          type="text"
+          [ngModel]="praticaSelezionata.nome_istituto"
+          readonly
+        >
+
+        <label>Data partenza</label>
+        <input
+          type="text"
+          [ngModel]="praticaSelezionata.data_inizio"
+          readonly
+        >
+
+        <label>Data rientro</label>
+        <input
+          type="text"
+          [ngModel]="praticaSelezionata.data_fine"
+          readonly
+        >
+
+        <label>Semestre</label>
+        <input
+          type="text"
+          [ngModel]="praticaSelezionata.semestre"
+          readonly
+        >
+
+        <label>Stato</label>
+        <input
+          type="text"
+          [ngModel]="praticaSelezionata.stato"
+          readonly
+        >
+
+        <label>Motivazione</label>
+        <textarea
+          [ngModel]="praticaSelezionata.motivazione"
+          readonly
+        ></textarea>
+
+      </div>
+
+      <h3>Esami associati</h3>
+
+      <div
+        class="esami"
+        *ngIf="praticaSelezionata.esami?.length"
+      >
+
+        <div
+          class="esame"
+          *ngFor="let e of praticaSelezionata.esami"
+        >
+          <span>{{ e.esame_locale_nome }}</span>
+          <span>→</span>
+          <span>{{ e.esame_estero_nome }}</span>
+        </div>
+
+      </div>
+
+      <button
+        class="btn-file"
+        (click)="scaricaAgreement(praticaSelezionata.id)"
+      >
+        Mostra Learning Agreement
+      </button>
+
+      <div
+        class="azioni"
+        *ngIf="
+          praticaSelezionata.stato === 'APPROVATA_DOCENTE' ||
+          praticaSelezionata.stato === 'APPROVATO_TRANSCRIPT'
+        "
+      >
+
+        <button
+          class="btn-accetta"
+          (click)="accettaPratica()"
+        >
+          Accetta
+        </button>
+
+        <button
+          class="btn-rifiuta"
+          (click)="rifiutaPratica()"
+        >
+          Rifiuta
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

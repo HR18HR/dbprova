@@ -35,24 +35,33 @@ export class LoginComponent {
     this.SerH.Log_In(this.username, this.password).subscribe({
       next: data => {
         // Parsing brutale della risposta per ottenere il messaggio e il token (da sistemare meglio!)
-        this.benvenuto = data.message = 'Benvenuto';
-         this.ruolo=<Token>jwtDecode(data.token);
-          if (this.ruolo.ruolo == "S") {
-        localStorage.setItem("jwt", data.token);
-      } else {
-        localStorage.setItem("jwt_1", data.token);
-      }
-        // Se il token è stato salvato correttamente
-        if (localStorage.getItem("jwt") != null) {
-          setTimeout(()=>{
-            if(this.ruolo.ruolo!="S")
-              this.Rotta.navigate(["/homed"])
-            else this.Rotta.navigate(["homes"])
-          },1000)
-          
-    
-         
-        }
+        this.benvenuto = 'Benvenuto';
+
+          this.ruolo = jwtDecode<Token>(data.token);
+
+          if (this.ruolo.ruolo === "S") {
+            localStorage.setItem("jwt", data.token);
+
+            setTimeout(() => {
+              this.Rotta.navigate(["/homes"]);
+            }, 500);
+          }
+
+          else if (this.ruolo.ruolo === "D") {
+            localStorage.setItem("jwt_1", data.token);
+
+            setTimeout(() => {
+              this.Rotta.navigate(["/homed"]);
+            }, 500);
+          }
+
+          else if (this.ruolo.ruolo === "U") {
+            localStorage.setItem("jwt_2", data.token);
+
+            setTimeout(() => {
+              this.Rotta.navigate(["/homeu"]);
+            }, 500);
+          }
       },
       error: err => {
         // nel caso le credenziali fossero sbagliate, catturo errore mandato dalla funzione che gestisce Login nel Backend
