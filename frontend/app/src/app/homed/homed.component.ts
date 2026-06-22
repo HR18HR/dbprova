@@ -59,6 +59,13 @@ ngAfterViewInit(): void {
 
         this.res.Neg = 1;
 
+        setTimeout(()=>{
+          this.message=" "
+          this.res.Pos=0
+          this.res.Neg=0
+
+      },2000)
+
       }
 
     });
@@ -90,6 +97,12 @@ accettaPratica() {
       this.message = r.message;
       this.res.Pos = 1;
       this.res.Neg = 0;
+      setTimeout(()=>{
+          this.message=" "
+          this.res.Pos=0
+          this.res.Neg=0
+
+      },2000)
 
       const i = this.praticheDocente.findIndex(p => p.id === r.pratica.id);
 
@@ -103,6 +116,12 @@ accettaPratica() {
       this.message = err.error?.errore ?? 'Errore approvazione pratica';
       this.res.Pos = 0;
       this.res.Neg = 1;
+      setTimeout(()=>{
+          this.message=" "
+          this.res.Pos=0
+          this.res.Neg=0
+
+      },2000)
     }
   });
 }
@@ -131,6 +150,12 @@ rifiutaPratica() {
       this.message = r.message;
       this.res.Pos = 1;
       this.res.Neg = 0;
+      setTimeout(()=>{
+          this.message=" "
+          this.res.Pos=0
+          this.res.Neg=0
+
+      },2000)
 
       const i = this.praticheDocente.findIndex(p => p.id === r.pratica.id);
 
@@ -144,6 +169,12 @@ rifiutaPratica() {
       this.message = err.error?.errore ?? 'Errore rifiuto pratica';
       this.res.Pos = 0;
       this.res.Neg = 1;
+      setTimeout(()=>{
+          this.message=" "
+          this.res.Pos=0
+          this.res.Neg=0
+
+      },2000)
     }
   });
 }
@@ -168,6 +199,14 @@ mostraLearningAgreement() {
       this.message = err.error?.errore ?? 'Errore apertura Learning Agreement';
       this.res.Pos = 0;
       this.res.Neg = 1;
+
+      setTimeout(()=>{
+          this.message=" "
+          this.res.Pos=0
+          this.res.Neg=0
+
+      },2000)
+      
     }
   });
 
@@ -185,11 +224,58 @@ motivazioneReadOnly(): boolean {
 
   return ![
     'ATT_APPROVAZIONE',
-    'MOBILITA'
+    'MOBILITA_IN_CORSO'
   ].includes(this.praticaSelezionata.stato);
 }
 
 
+puoGestireTranscript(): boolean {
+  if (!this.praticaSelezionata?.data_inizio || !this.praticaSelezionata?.data_fine) {
+    return false;
+  }
+
+  const partenza = new Date(this.praticaSelezionata.data_inizio);
+  const rientro = new Date(this.praticaSelezionata.data_fine);
+
+  return (
+    this.praticaSelezionata.stato === 'MOBILITA_IN_CORSO' &&
+    rientro.getTime() - partenza.getTime() >= 0
+  );
+}
+
+mostraTranscript() {
+  const token = localStorage.getItem('jwt_1');
+
+  if (!token || !this.praticaSelezionata) {
+    return;
+  }
+
+  this.pratiche_1.scaricaTranscript(
+    token,
+    this.praticaSelezionata.id
+  ).subscribe({
+    next: (file) => {
+      const url = window.URL.createObjectURL(file);
+      window.open(url, '_blank');
+    },
+    error: (err) => {
+      this.message = err.error?.errore ?? 'Errore apertura Transcript';
+      this.res.Pos = 0;
+      this.res.Neg = 1;
+
+      setTimeout(() => {
+        this.message = ' ';
+        this.res.Pos = 0;
+        this.res.Neg = 0;
+      }, 2000);
+    }
+  });
+}
+
+
 
 
 }
+
+
+

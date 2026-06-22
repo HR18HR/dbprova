@@ -28,9 +28,9 @@ with app.app_context():
     salt = bcrypt.gensalt().decode()
 
     utente = Utente(
-    nome="Hamza",
-    cognome="Rofi",
-    email="hamza.rofi@unive.it",
+    nome="user",
+    cognome="user_1",
+    email="user@unive.it",
     password_hash=bcrypt.hashpw(
         "123".encode(),
         salt.encode()
@@ -89,9 +89,9 @@ with app.app_context():
     salt_1 = bcrypt.gensalt().decode()
 
     docente = Utente(
-        nome="Mario",
-        cognome="Rossi",
-        email="mario.rossi@unive.it",
+        nome="docente",
+        cognome="docente_1",
+        email="docente@unive.it",
         password_hash=bcrypt.hashpw(
             "123".encode(),
             salt_1.encode()
@@ -103,7 +103,24 @@ with app.app_context():
             "%d/%m/%Y"
         )
 )
+    uff = Utente(
+        nome="uff",
+        cognome="uff_1",
+        email="ffff@unive.it",
+        password_hash=bcrypt.hashpw(
+            "123".encode(),
+            salt_1.encode()
+        ).decode(),
+        salt=salt_1,
+        ruolo="U",
+        data_nascita=datetime.strptime(
+            "12/12/2000",
+            "%d/%m/%Y"
+        )
+    )
     db.session.add(docente)
+    db.session.commit()
+    db.session.add(uff)
     db.session.commit()
 
     db.session.add_all(esami_esteri)

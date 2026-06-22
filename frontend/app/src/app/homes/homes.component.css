@@ -629,3 +629,9 @@ select:disabled{
 .delete-btn:hover {
   background: #bb2d3b;
 }
+.istituto-mini {
+  margin-top: -6px;
+  margin-bottom: 12px;
+  color: #666;
+  font-size: 12px;
+}

@@ -65,6 +65,10 @@ export class HomesComponent implements OnInit {
   esamiPraticaModifica: EsamiPratica[] = [];
   eliminata:boolean=false;
 
+  fileTranscript: File | null = null;
+
+  learningAgreementModifica: File | null = null;
+
   constructor(
     public user: UserService,
     public pratiche: PraticheService
@@ -216,12 +220,23 @@ export class HomesComponent implements OnInit {
   }
 
   selezionaFile(event: Event) {
-    const input = event.target as HTMLInputElement;
 
-    if (input.files && input.files.length > 0) {
-      this.filePratica = input.files[0];
-    }
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0) {
+    return;
   }
+
+  const file = input.files[0];
+
+  if (file.type !== 'application/pdf') {
+    alert('Puoi caricare solo file PDF');
+    input.value = '';
+    return;
+  }
+
+  this.filePratica = file;
+}
 
   creaPratica() {
     const token = localStorage.getItem('jwt');
@@ -230,6 +245,12 @@ export class HomesComponent implements OnInit {
       this.message = 'Token mancante';
       return;
     }
+  if (!this.filePratica) {
+  this.message = 'Il Learning Agreement PDF è obbligatorio';
+  this.res.Pos = 0;
+  this.res.Neg = 1;
+  return;
+}
 
     this.pratiche.CreaPratica(
       token,
@@ -274,25 +295,57 @@ export class HomesComponent implements OnInit {
       id: e.id ?? index + 1,
       pratica_id: p.id,
       esame_locale_nome: e.esame_locale_nome ?? '',
-      esame_estero_id: e.esame_estero_id ?? e.esame_estero_nome ?? ''
+      esame_estero_nome: e.esame_estero_nome ?? e.esame_estero_nome ?? ''
     } as any));
   }
 
   puoVedereTastoModifica(p: Pratica): boolean {
-    return p.stato === 'ATT_APPROVAZIONE' || p.stato === 'MOBILITA_IN_CORSO';
+    return  p.stato === 'CREATA' 
+    || p.stato === 'ATT_APPROVAZIONE' || p.stato === 'MOBILITA_IN_CORSO';
   }
 
   puoModificareCampoNormale(p: Pratica): boolean {
-    return p.stato === 'ATT_APPROVAZIONE';
+   return  p.stato === 'CREATA' 
+    || p.stato === 'ATT_APPROVAZIONE';
   }
 
   puoModificareDataRientro(p: Pratica): boolean {
-    return p.stato === 'ATT_APPROVAZIONE' || p.stato === 'MOBILITA_IN_CORSO';
+
+  if (
+    p.stato === 'CREATA' ||
+    p.stato === 'ATT_APPROVAZIONE'
+  ) {
+    return true;
   }
 
-  puoModificareEsami(p: Pratica): boolean {
-    return p.stato === 'ATT_APPROVAZIONE' || p.stato === 'MOBILITA_IN_CORSO';
+  if (
+    p.stato === 'MOBILITA_IN_CORSO' &&
+    !this.mobilitaTerminata(p)
+  ) {
+    return true;
   }
+
+  return false;
+}
+
+  puoModificareEsami(p: Pratica): boolean {
+
+  if (
+    p.stato === 'CREATA' ||
+    p.stato === 'ATT_APPROVAZIONE'
+  ) {
+    return true;
+  }
+
+  if (
+    p.stato === 'MOBILITA_IN_CORSO' &&
+    !this.mobilitaTerminata(p)
+  ) {
+    return true;
+  }
+
+  return false;
+}
 
   puoModificareMotivazione(p: Pratica): boolean {
     return false;
@@ -336,18 +389,37 @@ export class HomesComponent implements OnInit {
       return;
     }
 
-    
+    if (
+  (this.praticaSelezionata.stato === 'CREATA' ||
+   this.praticaSelezionata.stato === 'ATT_APPROVAZIONE')
+  &&
+  !this.learningAgreementModifica
+) {
+  alert('Devi caricare un Learning Agreement PDF');
+  return;
+}
 
-    this.pratiche.ModificaPratica(
-      token,
-      this.praticaSelezionata.id,
-      this.emailDocente,
-      this.nomeIstituto,
-      this.dataPartenza,
-      this.dataRientroModifica,
-      this.semestre,
-      this.esamiPraticaModifica
-    ).subscribe({
+if (
+  this.mostraUploadTranscript(this.praticaSelezionata)
+  &&
+  !this.fileTranscript
+) {
+  alert('Devi caricare un Transcript PDF');
+  return;
+}
+
+  this.pratiche.ModificaPratica(
+  token,
+  this.praticaSelezionata.id,
+  this.emailDocente,
+  this.nomeIstituto,
+  this.dataPartenza,
+  this.dataRientroModifica,
+  this.semestre,
+  this.esamiPraticaModifica,
+  this.learningAgreementModifica,
+  this.fileTranscript
+).subscribe({
       next: (r) => {
 
   this.message = r.message;
@@ -405,8 +477,77 @@ export class HomesComponent implements OnInit {
 }
 
 
-  puoEliminarePratica(pratica: Pratica): boolean {
+puoEliminarePratica(pratica: Pratica): boolean {
   return pratica.stato === 'CREATA' || pratica.stato === 'ATT_APPROVAZIONE';
 }
 
+
+selezionaTranscript(event: Event) {
+
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0) {
+    return;
+  }
+
+  const file = input.files[0];
+
+  if (file.type !== 'application/pdf') {
+    alert('Puoi caricare solo file PDF');
+    input.value = '';
+    return;
+  }
+
+  this.fileTranscript = file;
+}
+
+mostraUploadTranscript(p: Pratica): boolean {
+
+  return (
+    p.stato === 'MOBILITA_IN_CORSO' &&
+    this.mobilitaTerminata(p)
+  );
+}
+
+
+getCreditiEsame(nomeEsame: string): number {
+  const esame = this.esami.find(e => e.nome === nomeEsame);
+  return esame ? esame.crediti : 0;
+}
+
+
+selezionaLearningAgreementModifica(event: Event) {
+
+  const input = event.target as HTMLInputElement;
+
+  if (!input.files || input.files.length === 0) {
+    return;
+  }
+
+  const file = input.files[0];
+
+  if (file.type !== 'application/pdf') {
+    alert('Puoi caricare solo file PDF');
+    input.value = '';
+    return;
+  }
+
+  this.learningAgreementModifica = file;
+}
+
+
+mobilitaTerminata(p: Pratica): boolean {
+
+  if (!p.data_fine) {
+    return false;
+  }
+
+  const oggi = new Date();
+  const rientro = new Date(p.data_fine);
+
+  oggi.setHours(0,0,0,0);
+  rientro.setHours(0,0,0,0);
+
+  return rientro <= oggi;
+}
 }

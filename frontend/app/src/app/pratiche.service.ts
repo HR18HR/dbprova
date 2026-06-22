@@ -66,6 +66,7 @@ export interface EsamiPratica {
   pratica_id: string;
   esame_locale_nome: string;
   esame_estero_nome: string;
+  crediti?: number;
 }
 
 
@@ -183,28 +184,41 @@ ModificaPratica(
   data_partenza: string,
   data_rientro: string | null,
   semestre: string,
-  esami: EsamiPratica[]
-): Observable<{message:string, pratica:Pratica}> {
+  esami: EsamiPratica[],
+  learningAgreementModifica: File | null,
+  transcript: File | null
+): Observable<{ message: string, pratica: Pratica }> {
 
   const headers = new HttpHeaders({
     Authorization: `Bearer ${token}`
   });
 
-  return this.Http.put<{message:string, pratica:Pratica}>(
+  const formData = new FormData();
+
+  formData.append('email_docente', email_docente);
+  formData.append('nome_istituto', nome_istituto);
+  formData.append('data_partenza', data_partenza);
+
+  if (data_rientro) {
+    formData.append('data_rientro', data_rientro);
+  }
+
+  formData.append('semestre', semestre);
+  formData.append('esami', JSON.stringify(esami));
+
+  if (learningAgreementModifica) {
+    formData.append('agreement', learningAgreementModifica);
+  }
+  if (transcript) {
+    formData.append('transcript', transcript);
+  }
+
+  return this.Http.put<{ message: string, pratica: Pratica }>(
     `http://localhost:5000/modifica_pratica/${id_pratica}`,
-    {
-      email_docente,
-      nome_istituto,
-      data_partenza,
-      data_rientro,
-      semestre,
-      esami
-    },
+    formData,
     { headers }
   );
 }
-
-
 
 getPraticheDocente(token: string): Observable<Pratica[]> {
   const headers = new HttpHeaders({
@@ -316,6 +330,23 @@ scaricaAgreementUfficio(id: string, token: string) {
     }
   );
 }
+
+scaricaTranscript(token: string, id_pratica: string): Observable<Blob> {
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`
+  });
+
+  return this.Http.get(
+    `http://localhost:5000/pratiche_docente/${id_pratica}/transcript`,
+    {
+      headers,
+      responseType: 'blob'
+    }
+  );
+}
+
+
+
 
 }
 

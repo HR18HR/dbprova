@@ -41,17 +41,17 @@
 
         <button
           class="btn-modifica-pratica"
-          *ngIf="p.stato === 'ATT_APPROVAZIONE' || p.stato === 'MOBILITA_IN_CORSO'"
+          *ngIf="puoVedereTastoModifica(p)"
           (click)="selezionaPratica(p); attivaModificaPratica()">
           Modifica
         </button>
 
         <button
-    class="btn-dettagli"
-    *ngIf=" !eliminata && p.stato !== 'ATT_APPROVAZIONE' 
-            && p.stato !== 'MOBILITA_IN_CORSO'">
-    Dettagli
-  </button>
+          class="btn-dettagli"
+          *ngIf="!puoVedereTastoModifica(p)"
+          (click)="selezionaPratica(p)">
+          Dettagli
+        </button>
 
       </div>
 
@@ -69,6 +69,12 @@
         <label>Istituto</label>
         <input type="text" [ngModel]="p.nome_istituto" readonly>
 
+        <div class="istituto-mini" *ngFor="let istituto of istituti">
+          <small *ngIf="istituto.nome === p.nome_istituto">
+            {{ istituto.citta }}, {{ istituto.paese }}
+          </small>
+        </div>
+
         <label>Data partenza</label>
         <input type="date" [ngModel]="p.data_inizio" readonly>
 
@@ -80,6 +86,25 @@
 
         <label>Motivazione</label>
         <textarea [ngModel]="p.motivazione" readonly></textarea>
+
+        <label>Esami scelti</label>
+
+        <div *ngIf="p.esami && p.esami.length > 0; else nessunEsameCard">
+
+          <div class="esame-view" *ngFor="let esame of p.esami">
+            <strong>{{ esame.esame_locale_nome }}</strong>
+            <span *ngIf="esame.crediti !== undefined && esame.crediti !== null">
+              ({{ esame.crediti }} CFU)
+            </span>
+            →
+            {{ esame.esame_estero_nome }}
+          </div>
+
+        </div>
+
+        <ng-template #nessunEsameCard>
+          <p class="empty-message">Nessun esame inserito.</p>
+        </ng-template>
 
       </div>
 
@@ -166,10 +191,17 @@
     <label>Istituto</label>
     <select [(ngModel)]="nomeIstituto">
       <option value="">Seleziona istituto</option>
+
       <option *ngFor="let istituto of istituti" [value]="istituto.nome">
         {{ istituto.nome }}
       </option>
     </select>
+
+    <div class="istituto-mini" *ngFor="let istituto of istituti">
+      <small *ngIf="istituto.nome === nomeIstituto">
+        {{ istituto.citta }}, {{ istituto.paese }}
+      </small>
+    </div>
 
     <label>Data partenza</label>
     <input type="date" [(ngModel)]="dataPartenza">
@@ -178,12 +210,12 @@
     <input type="date" [(ngModel)]="dataRientro">
 
     <label>Semestre</label>
-<select [(ngModel)]="semestre">
-  <option value="">Seleziona semestre</option>
-  <option value="PRIMO">Primo semestre</option>
-  <option value="SECONDO">Secondo semestre</option>
-  <option value="ANNO">Anno intero</option>
-</select>
+    <select [(ngModel)]="semestre">
+      <option value="">Seleziona semestre</option>
+      <option value="PRIMO">Primo semestre</option>
+      <option value="SECONDO">Secondo semestre</option>
+      <option value="ANNO">Anno intero</option>
+    </select>
 
     <h3 class="section-title">Esami</h3>
 
@@ -191,6 +223,7 @@
 
       <select [(ngModel)]="esame.esame_locale_nome">
         <option value="">Seleziona esame interno</option>
+
         <option *ngFor="let e of esami" [value]="e.nome">
           {{ e.nome }} ({{ e.crediti }} CFU)
         </option>
@@ -198,6 +231,7 @@
 
       <select [(ngModel)]="esame.esame_estero_nome">
         <option value="">Seleziona esame estero</option>
+
         <option
           *ngFor="let e of esami"
           [value]="e.nome_esame_estero"
@@ -216,8 +250,12 @@
       + Aggiungi esame
     </button>
 
-    <label>Agreement</label>
-    <input type="file" (change)="selezionaFile($event)">
+    <label>Learning Agreement</label>
+    <input
+  type="file"
+  accept="application/pdf,.pdf"
+  required
+  (change)="selezionaFile($event)">
 
     <button class="save-btn" (click)="creaPratica()">
       Crea pratica
@@ -248,18 +286,19 @@
       ×
     </button>
 
-    <button
-      class="delete-btn"
-      *ngIf="praticaSelezionata && puoEliminarePratica(praticaSelezionata)"
-      (click)="eliminaPratica(praticaSelezionata.id)">
-      🗑 Elimina pratica
-    </button>
-
     <h2>Dettaglio pratica</h2>
 
     <p class="subtitle">
       Stato pratica: {{ praticaSelezionata.stato }}
     </p>
+
+    <button
+      type="button"
+      class="delete-btn"
+      *ngIf="puoEliminarePratica(praticaSelezionata)"
+      (click)="eliminaPratica(praticaSelezionata.id)">
+      🗑 Elimina pratica
+    </button>
 
     <label>ID Pratica</label>
     <input type="text" [ngModel]="praticaSelezionata.id" readonly>
@@ -271,12 +310,18 @@
     <input
       type="email"
       [(ngModel)]="emailDocente"
-      [readonly]="!modificaPraticaAttiva || !puoModificareCampoNormale(praticaSelezionata)">
+      [readonly]="
+        !modificaPraticaAttiva ||
+        !puoModificareCampoNormale(praticaSelezionata)
+      ">
 
     <label>Istituto</label>
     <select
       [(ngModel)]="nomeIstituto"
-      [disabled]="!modificaPraticaAttiva || !puoModificareCampoNormale(praticaSelezionata)">
+      [disabled]="
+        !modificaPraticaAttiva ||
+        !puoModificareCampoNormale(praticaSelezionata)
+      ">
 
       <option value="">Seleziona istituto</option>
 
@@ -286,34 +331,58 @@
 
     </select>
 
+    <div class="istituto-mini" *ngFor="let istituto of istituti">
+      <small *ngIf="istituto.nome === nomeIstituto">
+        {{ istituto.citta }}, {{ istituto.paese }}
+      </small>
+    </div>
+
     <label>Data partenza</label>
     <input
       type="date"
       [(ngModel)]="dataPartenza"
-      [readonly]="!modificaPraticaAttiva || !puoModificareCampoNormale(praticaSelezionata)">
+      [readonly]="
+        !modificaPraticaAttiva ||
+        !puoModificareCampoNormale(praticaSelezionata)
+      ">
 
     <label>Data rientro</label>
     <input
       type="date"
       [(ngModel)]="dataRientroModifica"
-      [readonly]="!modificaPraticaAttiva || !puoModificareDataRientro(praticaSelezionata)">
+      [readonly]="
+        !modificaPraticaAttiva ||
+        !puoModificareDataRientro(praticaSelezionata)
+      ">
 
-      <label>Semestre</label>
+    <label>Semestre</label>
     <select
-      [(ngModel)]="praticaSelezionata.semestre"
-      [disabled]="!modificaPraticaAttiva || !puoModificareCampoNormale(praticaSelezionata)">
+      [(ngModel)]="semestre"
+      [disabled]="
+        !modificaPraticaAttiva ||
+        !puoModificareCampoNormale(praticaSelezionata)
+      ">
+
       <option value="">Seleziona semestre</option>
       <option value="PRIMO">Primo semestre</option>
       <option value="SECONDO">Secondo semestre</option>
       <option value="ANNO">Anno intero</option>
+
     </select>
-      
+
     <label>Motivazione</label>
     <textarea [(ngModel)]="motivazioneModifica" readonly></textarea>
+
+
+    <!-- ESAMI -->
 
     <h3 class="section-title">
       Esami della pratica
     </h3>
+
+    <div *ngIf="esamiPraticaModifica.length === 0" class="empty-message">
+      Nessun esame inserito.
+    </div>
 
     <div
       class="esame-row"
@@ -321,7 +390,10 @@
 
       <select
         [(ngModel)]="esame.esame_locale_nome"
-        [disabled]="!modificaPraticaAttiva || !puoModificareEsami(praticaSelezionata)">
+        [disabled]="
+          !modificaPraticaAttiva ||
+          !puoModificareEsami(praticaSelezionata)
+        ">
 
         <option value="">Seleziona esame interno</option>
 
@@ -333,7 +405,10 @@
 
       <select
         [(ngModel)]="esame.esame_estero_nome"
-        [disabled]="!modificaPraticaAttiva || !puoModificareEsami(praticaSelezionata)">
+        [disabled]="
+          !modificaPraticaAttiva ||
+          !puoModificareEsami(praticaSelezionata)
+        ">
 
         <option value="">Seleziona esame estero</option>
 
@@ -346,10 +421,17 @@
 
       </select>
 
+      <span class="cfu-esame">
+        {{ esame.crediti ?? getCreditiEsame(esame.esame_locale_nome) }} CFU
+      </span>
+
       <button
         type="button"
         class="trash-btn"
-        *ngIf="modificaPraticaAttiva && puoModificareEsami(praticaSelezionata)"
+        *ngIf="
+          modificaPraticaAttiva &&
+          puoModificareEsami(praticaSelezionata)
+        "
         (click)="rimuoviEsameModifica(i)">
         🗑
       </button>
@@ -359,10 +441,58 @@
     <button
       type="button"
       class="add-btn"
-      *ngIf="modificaPraticaAttiva && puoModificareEsami(praticaSelezionata)"
+      *ngIf="
+        modificaPraticaAttiva &&
+        puoModificareEsami(praticaSelezionata)
+      "
       (click)="aggiungiEsameModifica()">
       + Aggiungi esame
     </button>
+
+
+    <!-- LEARNING AGREEMENT: SOLO CREATA / ATT_APPROVAZIONE -->
+
+    <div
+      *ngIf="
+        modificaPraticaAttiva &&
+        (
+          praticaSelezionata.stato === 'CREATA' ||
+          praticaSelezionata.stato === 'ATT_APPROVAZIONE'
+        )
+      ">
+
+      <h3 class="section-title">
+        Learning Agreement
+      </h3>
+
+      <label>Carica nuovo Learning Agreement</label>
+      <input
+        type="file"
+        accept="application/pdf.pdf"
+        required
+        (change)="selezionaLearningAgreementModifica($event)">
+
+    </div>
+
+
+    <!-- TRANSCRIPT: SOLO QUANDO CONSENTITO -->
+
+    <div *ngIf="mostraUploadTranscript(praticaSelezionata)">
+
+      <h3 class="section-title">
+        Transcript
+      </h3>
+
+      <label>Carica transcript</label>
+     <input
+  type="file"
+  accept="application/pdf,.pdf"
+  required
+  (change)="selezionaFile($event)">
+    </div>
+
+
+    <!-- AZIONI -->
 
     <div class="azioni-pratica">
 
@@ -374,12 +504,30 @@
       </button>
 
       <button
+        class="save-btn"
+        *ngIf="
+          !modificaPraticaAttiva &&
+          mostraUploadTranscript(praticaSelezionata)
+        "
+        (click)="salvaModificaPratica()">
+        Salva transcript
+      </button>
+
+      <button
         class="cancel-btn"
         *ngIf="modificaPraticaAttiva"
         (click)="annullaModificaPratica()">
         Annulla
       </button>
 
+    </div>
+
+    <div class="success" *ngIf="res.Pos === 1">
+      {{ message }}
+    </div>
+
+    <div class="error" *ngIf="res.Neg === 1">
+      {{ message }}
     </div>
 
   </div>

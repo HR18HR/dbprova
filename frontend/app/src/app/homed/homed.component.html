@@ -141,10 +141,9 @@
         readonly>
 
       <label>Motivazione</label>
-
       <textarea
         [(ngModel)]="motivazioneRifiuto"
-        [readonly]="motivazioneReadOnly()"
+        [readonly]="!puoDecidereDocente() && !puoGestireTranscript()"
         placeholder="Inserisci una motivazione in caso di rifiuto">
       </textarea>
 
@@ -176,15 +175,25 @@
 
       <button
         class="btn-secondary"
+        *ngIf="puoDecidereDocente() || puoGestireTranscript()"
         (click)="mostraLearningAgreement()">
 
-        Mostra Learning Agreement
+        Scarica Learning Agreement
+
+      </button>
+
+      <button
+        class="btn-secondary"
+        *ngIf="puoGestireTranscript()"
+        (click)="mostraTranscript()">
+
+        Scarica Transcript
 
       </button>
 
       <button
         class="btn-success"
-        *ngIf="puoDecidereDocente()"
+        *ngIf="puoDecidereDocente() || puoGestireTranscript()"
         (click)="accettaPratica()">
 
         Accetta
@@ -193,7 +202,7 @@
 
       <button
         class="btn-danger"
-        *ngIf="puoDecidereDocente()"
+        *ngIf="puoDecidereDocente() || puoGestireTranscript()"
         (click)="rifiutaPratica()">
 
         Rifiuta
