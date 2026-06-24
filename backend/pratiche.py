@@ -791,3 +791,35 @@ def learning_agreement_ufficio(id_pratica):
         mimetype="application/pdf",
         as_attachment=False
     )
+
+
+
+@pratiche_bp.route("/pratiche_ufficio/<id_pratica>/transcript", methods=["GET"])
+def mostra_transcript_docente(id_pratica):
+    try:
+        email_docente, errore, status = _richiedi_ruolo("U")
+
+        if errore:
+            return errore, status
+
+        pratica = Pratica.query.filter_by(id=id_pratica).first()
+
+        if not pratica:
+            return jsonify({"errore": "Pratica non trovata"}), 404
+
+        percorso =os.path.join(
+            _cartella_pratica(pratica),
+            "transcript.pdf"
+        )
+
+        if not os.path.exists(percorso):
+            return jsonify({"errore": "Transcript non trovato"}), 404
+
+        return send_file(
+            percorso,
+            mimetype="application/pdf",
+            as_attachment=False
+        )
+
+    except Exception as e:
+        return jsonify({"errore": str(e)}), 500
